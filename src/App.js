@@ -18,18 +18,27 @@ class App extends Component {
     }
   }
 
-  handleLogin = () => {
-    fetch('/api/login/' + this.state.id + '/' + this.state.pw)
+handleLogin = () => {
+    const requstOption = {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body : JSON.stringify({
+        id : this.state.id,
+        pw : this.state.pw
+      })
+    }
+    fetch('/api/login/', requstOption)
       .then(res => res.json())
       .then(data => {
         if (data.length !== 0) {
           sessionStorage.setItem('u_id', data[0].u_id);
           sessionStorage.setItem('nickname', data[0].nickname);
           sessionStorage.setItem('admin', data[0].admin);
-          this.musicCallback();
+          // window.location.href = '/';
+          alert("로그인 성공");
         }
         else {
-          alert('아이디 혹은 비밀번호를 다시 확인해주세요')
+          alert('아이디 혹은 비밀번호를 다시 확인해주세요');
         }
       });
   }
