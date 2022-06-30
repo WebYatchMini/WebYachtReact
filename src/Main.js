@@ -13,6 +13,7 @@ class Main extends Component {
                 {(() => {
                     if (!this.state.login) return <Navigate to='/login' replace={true}/>
                 })()}
+                <div>test</div>
             </div>
         )
     }

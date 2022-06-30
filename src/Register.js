@@ -21,7 +21,7 @@ class Register extends Component {
     else {
       fetch('/api/search/id/' + this.state.id)
         .then(res => res.json())
-        .then(data => data.length === 0 ? (window.confirm("사용 가능한 아이디 입니다, 아이디를 사용하시겠습니까?") ? this.setState({id_dup:true}) : this.setState({id_dup:false})) : alert("중복된 아이디입니다, 다시 확인해주세요~"))
+        .then(data => !data ? (window.confirm("사용 가능한 아이디 입니다, 아이디를 사용하시겠습니까?") ? this.setState({id_dup:true}) : this.setState({id_dup:false})) : alert("중복된 아이디입니다, 다시 확인해주세요~"))
     }
   };
 
@@ -33,7 +33,7 @@ class Register extends Component {
     else {
       fetch('/api/search/nickname/' + this.state.nickname)
         .then(res => res.json())
-        .then(data => data.length === 0 ? (window.confirm("사용 가능한 닉네임 입니다, 닉네임을 사용하시겠습니까?") ? this.setState({nick_dup:true}) : this.setState({nick_dup:false})) : alert("중복된 닉네임입니다, 다시 확인해주세요~"))
+        .then(data => !data ? (window.confirm("사용 가능한 닉네임 입니다, 닉네임을 사용하시겠습니까?") ? this.setState({nick_dup:true}) : this.setState({nick_dup:false})) : alert("중복된 닉네임입니다, 다시 확인해주세요~"))
     }
   }
 
@@ -59,7 +59,7 @@ class Register extends Component {
       alert("닉네임 중복확인을 해주세요")
     }
     else if (!this.passwordChk()) {
-      alert("비밀번호가 일치하지 않습니다");
+      alert("비밀번호가 일k치하지 않습니다");
     }
     else if (this.passwordChk() && this.state.id_dup && this.state.nick_dup) {
       let chk = window.confirm("이대로 가입하시겠습니까?");
