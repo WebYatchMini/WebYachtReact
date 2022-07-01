@@ -78,7 +78,7 @@ class Register extends Component {
           hint_answer: this.state.hint_answer,
         })
       }).then(res => res.json())
-      .then(data => data.serverStatus === 2 ?
+      .then(data => data ?
         (() => {
           alert("회원가입이 완료되었습니다");
           window.location.href = '/login'
