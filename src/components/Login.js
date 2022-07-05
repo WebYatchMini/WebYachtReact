@@ -41,15 +41,20 @@ handleLogin = () => {
           setStoreLoginTrue();
           setStoreUid(data.uid);
           setStoreNickname(data.nickname);
-          setStoreMmr(data.mmr);
+          setStoreMmr(data.mmr);  
           setStoreWin(data.win);
           setStoreLose(data.lose);
-          this.props.navigate('/');
+          // this.props.navigate('/');
+          window.location.href = '/';
         }
         else {
           alert('아이디 혹은 비밀번호를 다시 확인해주세요');
         }
       });
+
+          // setStoreLoginTrue();
+          // this.props.navigate('/');
+          // window.location.href = '/';
   }
 
   render() {
@@ -129,8 +134,9 @@ const mapDispatchToProps = (dispatch) => ({
   increaseStroeLose: () => dispatch(userAction.increaseLose())
 })
 
-export default function LoginWithNavigate(props) {
-  const navigate = useNavigate();
-  const LoginClass = connect(mapStateToProps, mapDispatchToProps)(Login);
-  return <LoginClass navigate={navigate}/>
-}
+// export default function LoginWithNavigate(props) {
+//   const navigate = useNavigate();
+//   const LoginClass = connect(mapStateToProps, mapDispatchToProps)(Login);
+//   return <LoginClass navigate={navigate}/>
+// }
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

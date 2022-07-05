@@ -65,6 +65,9 @@ const reducers = (state = initStates, action) => {
                 lose: state.lose + 1,
             }
         }
+        case userAction.RESET: {
+            return initStates;
+        }
         default: {
             return state;
         }

@@ -10,6 +10,8 @@ export const SET_LOGIN_FALSE = 'user/SET_LOGIN_FALSE'
 export const INCREASE_WIN = 'user/UP_WIN';
 export const INCREASE_LOSE = 'user/UP_LOSE';
 
+export const RESET = 'user/RESET';
+
 // Action creators
 export const setUid = (id) => {
   return {
@@ -69,3 +71,9 @@ export const increaseLose = () => {
       type: INCREASE_LOSE,
     }
   };
+
+export const reset = () => {
+  return {
+    type: RESET
+  }
+}

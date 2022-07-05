@@ -31,7 +31,7 @@ class Main extends Component {
             return {
                 ...this.state,
                 id: uid
-            }
+            } 
         })
     }
 
@@ -98,8 +98,12 @@ class Main extends Component {
         })
     }
 
+    handleLogout = () => {
+        fetch('/api/logout')
+    }
+
     render() {
-        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, setStoreUid, setStoreNickname, setStoreLoginTrue, setStoreLoginFalse, increaseStoreWin, increaseStroeLose } = this.props
+        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, setStoreUid, setStoreNickname, setStoreLoginTrue, setStoreLoginFalse, increaseStoreWin, increaseStroeLose, resetStore } = this.props
         return(
             <div className='common'>
                 {(() => {
@@ -161,6 +165,14 @@ class Main extends Component {
                     }}>
                         get log
                     </div>
+
+                    <button
+                    onClick={() => {
+                        this.handleLogout();
+                        resetStore();
+                    }}
+                    >로그아웃
+                    </button>
                 </div>
             </div>
         )
@@ -182,7 +194,8 @@ const mapDispatchToProps = (dispatch) => ({
     setStoreLoginTrue: () => dispatch(userAction.setLoginTrue()),
     setStoreLoginFalse: () => dispatch(userAction.setLoginFalse()),
     increaseStoreWin: () => dispatch(userAction.increaseWin()),
-    increaseStroeLose: () => dispatch(userAction.increaseLose())
+    increaseStroeLose: () => dispatch(userAction.increaseLose()),
+    resetStore: () => dispatch(userAction.reset())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main)
