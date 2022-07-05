@@ -170,6 +170,7 @@ class Main extends Component {
                     onClick={() => {
                         this.handleLogout();
                         resetStore();
+                        window.location.href = "/login";
                     }}
                     >로그아웃
                     </button>
