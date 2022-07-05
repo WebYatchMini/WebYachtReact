@@ -8,8 +8,6 @@ import createStore from './store';
 import reducers from './reducers';
 // (나중에 redux-toolkit으로 바꿔서 configureStore로 바꾸기)
 
-import Count from './components/Count';
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const store = createStore(reducers);
 
