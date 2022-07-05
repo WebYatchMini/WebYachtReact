@@ -9,12 +9,12 @@ class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: '',
-            nickname: '',
-            mmr: 0,
-            win: 0,
-            lose: 0,
-            login: false
+            id: props.storeUid,
+            nickname: props.storeNickname,
+            mmr: props.storeMMR,
+            win: props.storeWin,
+            lose: props.storeLose,
+            login: props.storeLogin
         }
     }
 
