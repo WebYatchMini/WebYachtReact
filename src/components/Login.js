@@ -1,7 +1,10 @@
 import { Component } from 'react'
+import { connect } from 'react-redux';
 import './login.css'
 
-class App extends Component {
+import * as userAction from "../actions/user"
+
+class Login extends Component {
   state = {
     id : "",
     pw : ""
@@ -20,6 +23,7 @@ class App extends Component {
   }
 
 handleLogin = () => {
+    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeMMR, setStoreUid, setStoreNickname, setStoreLoginTrue, setStoreLoginFalse, increaseStoreWin, increaseStroeLose } = this.props
     const requstOption = {
       method : 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -31,22 +35,20 @@ handleLogin = () => {
     fetch('/api/login/', requstOption)
       .then(res => res.json())
       .then(data => {
-        if (data.length !== 0) {
-          sessionStorage.setItem('u_id', data[0].u_id);
-          sessionStorage.setItem('nickname', data[0].nickname);
-          sessionStorage.setItem('admin', data[0].admin);
-          // window.location.href = '/';
-          alert("로그인 성공");
-        }
-        else {
-          alert('아이디 혹은 비밀번호를 다시 확인해주세요');
-        }
+        console.log(data);
+        // if (data.length !== 0) {
+          
+        //   window.location.href = '/';
+        // }
+        // else {
+        //   alert('아이디 혹은 비밀번호를 다시 확인해주세요');
+        // }
       });
   }
 
   render() {
     return (
-<div>
+      <div>
         <div className="container " id="loginForm">
           <form>
             <div className="row justify-content-center">
@@ -100,4 +102,22 @@ handleLogin = () => {
   }
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  storeUid: state.user.id,
+  storeNickname: state.user.nickname,
+  storeMMR: state.user.mmr,
+  storeWin: state.user.win,
+  storeLose: state.user.lose,
+  storeLogin: state.user.login
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  setStoreUid: (id) => dispatch(userAction.setUid(id)),
+  setStoreNickname: (nickname) => dispatch(userAction.setNickname(nickname)),
+  setStoreLoginTrue: () => dispatch(userAction.setLoginTrue()),
+  setStoreLoginFalse: () => dispatch(userAction.setLoginFalse()),
+  increaseStoreWin: () => dispatch(userAction.increaseWin()),
+  increaseStroeLose: () => dispatch(userAction.increaseLose())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

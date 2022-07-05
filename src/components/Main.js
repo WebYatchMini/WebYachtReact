@@ -11,9 +11,10 @@ class Main extends Component {
         this.state = {
             id: '',
             nickname: '',
+            mmr: 0,
             win: 0,
             lose: 0,
-            login: true
+            login: false
         }
     }
 
@@ -61,6 +62,24 @@ class Main extends Component {
         })
     }
 
+    setLoginTrue = () => {
+        this.setState(() => {
+            return {
+                ...this.state,
+                login: true
+            }
+        })
+    }
+
+    setLoginFalse = () => {
+        this.setState(() => {
+            return {
+                ...this.state,
+                login: false
+            }
+        })
+    }
+
     increaseWin = () => {
         this.setState((prevState) => {
             return {
@@ -80,7 +99,7 @@ class Main extends Component {
     }
 
     render() {
-        const { storeUid, storeNickname, storeWin, storeLose, setStoreUid, setStoreNickname, increaseStoreWin, increaseStroeLose } = this.props
+        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, setStoreUid, setStoreNickname, setStoreLoginTrue, setStoreLoginFalse, increaseStoreWin, increaseStroeLose } = this.props
         return(
             <div className='common'>
                 {(() => {
@@ -91,6 +110,7 @@ class Main extends Component {
                     <div>nickname: {this.state.nickname} / stored nickname: {`${storeNickname}`}</div>
                     <div>win: {this.state.win} / stored win: {`${storeWin}`}</div>
                     <div>lose: {this.state.lose} / stored lose: {`${storeLose}`}</div>
+                    <div>login: {this.state.login ? 1 : 0} / stored login: {`${storeLogin}`}</div>
                 </div>
                 <div>
                     <div>
@@ -126,6 +146,21 @@ class Main extends Component {
                         increaseStroeLose();
                     }}
                     >lose +</div>
+                    <div onClick={() => {
+                        this.setLoginTrue();
+                        setStoreLoginTrue();
+                    }}
+                    >make login true</div>
+                    <div onClick={() => {
+                        this.setLoginFalse();
+                        setStoreLoginFalse();
+                    }}
+                    >make login false</div>
+                    <div onClick={() => {
+                        console.log(this.state);
+                    }}>
+                        get log
+                    </div>
                 </div>
             </div>
         )
@@ -135,13 +170,17 @@ class Main extends Component {
 const mapStateToProps = (state) => ({
     storeUid: state.user.id,
     storeNickname: state.user.nickname,
+    storeMMR: state.user.mmr,
     storeWin: state.user.win,
-    storeLose: state.user.lose
+    storeLose: state.user.lose,
+    storeLogin: state.user.login
 })
 
 const mapDispatchToProps = (dispatch) => ({
     setStoreUid: (id) => dispatch(userAction.setUid(id)),
     setStoreNickname: (nickname) => dispatch(userAction.setNickname(nickname)),
+    setStoreLoginTrue: () => dispatch(userAction.setLoginTrue()),
+    setStoreLoginFalse: () => dispatch(userAction.setLoginFalse()),
     increaseStoreWin: () => dispatch(userAction.increaseWin()),
     increaseStroeLose: () => dispatch(userAction.increaseLose())
 })
