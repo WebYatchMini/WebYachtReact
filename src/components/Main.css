@@ -1,0 +1,200 @@
+html, body {
+    overflow: hidden;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 12pt;
+    font-weight: bold;
+
+    /* background-image: url();
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover; */
+}
+
+.common {
+    width: 100%;
+    height: 100%;
+}
+
+.menu_item {
+    font-size: 15pt;
+    color : black;   
+}
+
+#container {
+    width: 100%;
+    height: 100%;
+    max-width: 1920px;
+    max-height: 1080px;
+    min-width: 1280px;
+    min-height: 720px;
+    overflow: auto;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    padding: 50px 75px 50px 75px;
+    transform: translate(-50%, -50%);
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1.5fr 0.5fr 1fr 1fr;
+    grid-template-areas: 
+    "roomList roomList roomList myInfo"
+    "roomList roomList roomList etc"
+    "roomList roomList roomList etc"
+    "roomList roomList roomList etc";
+
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+#header {
+    background-color: rgba(30, 30, 30, 0.33);
+    margin-bottom: 24px;
+    max-width: 100%;
+    text-align: right;
+}
+
+.test {
+    background-color: rgba(30, 30, 30, 0.33);
+}
+
+#lobby {
+    grid-area: roomList;
+    flex-direction: column;
+    padding: 10px 10px;
+    background: rgba(30, 30, 30, 0.33);
+}
+#lobby .roomIndex {
+    width: 97.2%;
+    height: 50px;
+    background: rgba(30, 30, 30, 0.33);
+    margin-bottom: 10px;
+
+    display: grid;
+    flex-direction: row;
+    grid-template-columns: 0.45fr 0.55fr 5fr 1fr 1fr;
+    grid-template-areas: 
+    "password number title people state";
+
+    align-items: center;
+}
+#lobby .roomIndex .password {
+    grid-area: password;
+    text-align: center;
+}
+#lobby .roomIndex .number {
+    grid-area: number;
+    text-align: center;
+}
+#lobby .roomIndex .title {
+    grid-area: title;
+    text-align: center;
+}
+#lobby .roomIndex .people {
+    grid-area: people;
+}
+#lobby .roomIndex .state {
+    grid-area: state;
+}
+#lobby #roomList {
+    overflow-y: scroll;
+    height: 94%;
+    width: 100%;
+}
+#lobby #roomList .room {
+    width: 99%;
+    height: 60px;
+    background: rgba(30, 30, 30, 0.33);
+    margin-bottom: 10px;
+    margin-right: 1%;
+    border-left: 5px solid #FFFFFF;
+    cursor: pointer;
+
+    display: grid;
+    flex-direction: row;
+    grid-template-columns: 0.33fr 0.66fr 5fr 1fr 1fr;
+    grid-template-areas: 
+    "password number title people state";
+
+    align-items: center;
+}
+#lobby #roomList .room:hover {
+    border-left: 5px solid #ccaaff;
+}
+#lobby #roomList .room .password {
+    grid-area: password;
+    text-align: center;
+}
+#lobby #roomList .room .number {
+    grid-area: number;
+    text-align: center;
+}
+#lobby #roomList .room .title {
+    grid-area: title;
+    text-align: center;
+}
+#lobby #roomList .room .people {
+    grid-area: people;
+}
+#lobby #roomList .room .state {
+    grid-area: state;
+}
+#lobby #roomList::-webkit-scrollbar {
+    width: 20px;
+}
+#lobby #roomList::-webkit-scrollbar-thumb {
+    background: white;
+    background-clip: padding-box;
+    border: 6px solid transparent;
+    border-radius: 7px;
+}
+#lobby #roomList::-webkit-scrollbar-track {
+    background: rgba(30, 30, 30, 0.85);
+    border-radius: 5px;
+}
+
+#myInfo {
+    grid-area: myInfo;
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+}
+#myInfo .myInfoLogo {
+    width: 100%;
+    text-align: center;
+    cursor: default;
+
+    font-size: 3vw ;
+}
+
+#etc {
+    grid-area: etc;
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+}
+#etc .sideLogo {
+    width: 100%;
+    text-align: center;
+    cursor: default;
+
+    font-size: 3vw ;
+}
+#etc ul {
+    width: 100%;
+    text-align: center;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+#etc ul li {
+    list-style: none;
+}
+#etc ul li button {
+    background: rgba(30, 30, 30, 0);
+    border: none;
+    font-size: x-large;
+}
+#etc ul li button:hover {
+    color: white;
+}

@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import './login.css'
 
 import * as userAction from "../actions/user"
-import { Navigate } from 'react-router';
-import { useNavigate } from "react-router-dom";
 
 class Login extends Component {
   state = {
@@ -26,35 +24,35 @@ class Login extends Component {
 
 handleLogin = () => {
     const { setStoreUid, setStoreNickname, setStoreLoginTrue, setStoreMmr, setStoreWin, setStoreLose } = this.props
-    const requstOption = {
-      method : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body : JSON.stringify({
-        id : this.state.id,
-        pw : this.state.pw
-      })
-    }
-    fetch('/api/login/', requstOption)
-      .then(res => res.json())
-      .then(data => {
-        if (data.status) {
+    // const requstOption = {
+    //   method : 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body : JSON.stringify({
+    //     id : this.state.id,
+    //     pw : this.state.pw
+    //   })
+    // }
+    // fetch('/api/login/', requstOption)
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     if (data.status) {
+    //       setStoreLoginTrue();
+    //       setStoreUid(data.uid);
+    //       setStoreNickname(data.nickname);
+    //       setStoreMmr(data.mmr);  
+    //       setStoreWin(data.win);
+    //       setStoreLose(data.lose);
+    //       // this.props.navigate('/');
+    //       window.location.href = '/';
+    //     }
+    //     else {
+    //       alert('아이디 혹은 비밀번호를 다시 확인해주세요');
+    //     }
+    //   });
+
           setStoreLoginTrue();
-          setStoreUid(data.uid);
-          setStoreNickname(data.nickname);
-          setStoreMmr(data.mmr);  
-          setStoreWin(data.win);
-          setStoreLose(data.lose);
           // this.props.navigate('/');
           window.location.href = '/';
-        }
-        else {
-          alert('아이디 혹은 비밀번호를 다시 확인해주세요');
-        }
-      });
-
-          // setStoreLoginTrue();
-          // this.props.navigate('/');
-          // window.location.href = '/';
   }
 
   render() {

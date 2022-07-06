@@ -1,179 +1,56 @@
 import { Component } from 'react'
 import { connect } from 'react-redux';
 import { Navigate } from 'react-router-dom'
+import './Main.css'
 
 import * as userAction from "../actions/user"
 
 class Main extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            id: props.storeUid,
-            nickname: props.storeNickname,
-            mmr: props.storeMMR,
-            win: props.storeWin,
-            lose: props.storeLose,
-            login: props.storeLogin
-        }
-    }
-
-    pressEnter = (e) => {
-        if (e.key === 'Enter') {
-          this.setState({
-            [e.target.name]: e.target.value,
-          })
-        }
-      }
-
-    setUid = (uid) => {
-        this.setState(() => {
-            return {
-                ...this.state,
-                id: uid
-            } 
-        })
-    }
-
-    setNickname = (nickname) => {
-        this.setState(() => {
-            return {
-                ...this.state,
-                nickname: nickname
-            }
-        })
-    }
-
-    setWin = (win) => {
-        this.setState(() => {
-            return {
-                ...this.state,
-                win: win
-            }
-        })
-    }
-
-    setLose = (lose) => {
-        this.setState(() => {
-            return {
-                ...this.state,
-                lose: lose
-            }
-        })
-    }
-
-    setLoginTrue = () => {
-        this.setState(() => {
-            return {
-                ...this.state,
-                login: true
-            }
-        })
-    }
-
-    setLoginFalse = () => {
-        this.setState(() => {
-            return {
-                ...this.state,
-                login: false
-            }
-        })
-    }
-
-    increaseWin = () => {
-        this.setState((prevState) => {
-            return {
-                ...this.state,
-                win: prevState.win + 1
-            }
-        })
-    }
-
-    increaseLose = () => {
-        this.setState((prevState) => {
-            return {
-                ...this.state,
-                lose: prevState.lose + 1
-            }
-        })
-    }
 
     handleLogout = () => {
         fetch('/api/logout')
     }
 
     render() {
-        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, setStoreUid, setStoreNickname, setStoreLoginTrue, setStoreLoginFalse, increaseStoreWin, increaseStroeLose, resetStore } = this.props
+        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, resetStore } = this.props
         return(
             <div className='common'>
                 {(() => {
-                    if (!this.state.login) return <Navigate to='/login' replace={true}/>
+                    if (!storeLogin) return <Navigate to='/login' replace={true}/>
                 })()}
-                <div>
-                    <div>uid: {this.state.id} / stored uid: {`${storeUid}`}</div>
-                    <div>nickname: {this.state.nickname} / stored nickname: {`${storeNickname}`}</div>
-                    <div>win: {this.state.win} / stored win: {`${storeWin}`}</div>
-                    <div>lose: {this.state.lose} / stored lose: {`${storeLose}`}</div>
-                    <div>login: {this.state.login ? 1 : 0} / stored login: {`${storeLogin}`}</div>
-                </div>
-                <div>
-                    <div>
-                        <input
-                        placeholder='setUid'
-                        name='id'
-                        onKeyPress={
-                            (e) => {
-                                this.pressEnter(e);
-                                if (e.key === 'Enter') setStoreUid(e.target.value);
-                            }
-                        }
-                        ></input>
+                <div className='container-fluid' id='container'>
+                    <div className='test' id='lobby'>
+                        <div className='roomIndex'>
+                            <div className='password'><i class="fa fa-lock" aria-hidden="true"></i> / <i class="fa fa-unlock" aria-hidden="true"></i></div>
+                            <div className='number'>Room No.</div>
+                            <div className='title'>Title</div>
+                            <div className='people'>Player</div>
+                            <div className='state'>State</div>
+                        </div>
+                        <div id='roomList'>
+                            <div className='room'>
+                                <div className='password'><i class="fa fa-lock" aria-hidden="true"></i></div>
+                                <div className='number'>000001</div>
+                                <div className='title'>제목</div>
+                                <div className='people'>1/2</div>
+                                <div className='state'>대기중</div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <input
-                        placeholder='setNickname'
-                        name='nickname'
-                        onKeyPress={
-                            (e) => {
-                                this.pressEnter(e);
-                                if (e.key === 'Enter') setStoreNickname(e.target.value);
-                            }
-                        }
-                        ></input>
+                    <div className='test' id='myInfo'>
+                        <div className='myInfoLogo'>MY INFO</div>
+                        <div className='myInfoArea'>
+                            
+                        </div>
                     </div>
-                    <div onClick={() => {
-                        this.increaseWin();
-                        increaseStoreWin();
-                    }}>win +</div>
-                    <div onClick={() => {
-                        this.increaseLose();
-                        increaseStroeLose();
-                    }}
-                    >lose +</div>
-                    <div onClick={() => {
-                        this.setLoginTrue();
-                        setStoreLoginTrue();
-                    }}
-                    >make login true</div>
-                    <div onClick={() => {
-                        this.setLoginFalse();
-                        setStoreLoginFalse();
-                    }}
-                    >make login false</div>
-                    <div onClick={() => {
-                        console.log(this.state);
-                    }}>
-                        get log
-                    </div>
-
-                    <button
-                    onClick={() => {
-                        this.handleLogout();
-                        resetStore();
-                        window.location.href = "/login";
-                    }}
-                    >로그아웃
-                    </button>
+                    <div className='test' id='etc'>
+                        <div className='sideLogo'>SIDE MENU</div>
+                        <ul>
+                            <li><button>ROOM JOIN</button></li>
+                            <li><button>LIST REFRESH</button></li>
+                            <li><button>CREATE ROOM</button></li>
+                        </ul>
+                    </div>    
                 </div>
             </div>
         )
@@ -190,13 +67,13 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    setStoreUid: (id) => dispatch(userAction.setUid(id)),
-    setStoreNickname: (nickname) => dispatch(userAction.setNickname(nickname)),
-    setStoreLoginTrue: () => dispatch(userAction.setLoginTrue()),
-    setStoreLoginFalse: () => dispatch(userAction.setLoginFalse()),
-    increaseStoreWin: () => dispatch(userAction.increaseWin()),
-    increaseStroeLose: () => dispatch(userAction.increaseLose()),
     resetStore: () => dispatch(userAction.reset())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main)
+
+/*
+방 생성 /api/room/make
+새로고침 /api/room/refresh
+방 제거 /api/room/remove
+*/
