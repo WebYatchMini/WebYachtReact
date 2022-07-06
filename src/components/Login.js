@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { connect } from 'react-redux';
+import { Navigate } from 'react-router-dom'
 import './login.css'
 
 import * as userAction from "../actions/user"
@@ -51,13 +52,18 @@ handleLogin = () => {
     //   });
 
           setStoreLoginTrue();
+          setStoreUid(this.state.id);
           // this.props.navigate('/');
           window.location.href = '/';
   }
 
   render() {
+    const {storeLogin} = this.props;
     return (
       <div>
+        {(() => {
+          if (storeLogin) return <Navigate to='/' replace={true}/>
+        })()}
         <div className="container " id="loginForm">
           <form>
             <div className="row justify-content-center">
