@@ -34,14 +34,14 @@ class Main extends Component {
 
     render() {
         const { storeUid, storeNickname, storeWin, storeLose, storeLogin, resetStore } = this.props
-        let roomidx = 1
+        let roomidx = 0;
         let roomList = Array.from(this.state.roomArray).map(room => (
             <div className='room'>
                 <div className='password'>{room.locked ? <i className="bi bi-lock-fill"></i> : <i className="bi bi-unlock-fill"></i>}</div>
-                <div className='number'>{('000000' + roomidx.toString()).slice(-6)}</div>
+                <div className='number'>{('000000' + (roomidx = roomidx + 1).toString()).slice(-6)}</div>
                 <div className='title'>{room.title}</div>
-                <div className='people'>{room.currentPlayer} / 2</div>
-                <div className='state'>{room.started ? "게임중" : "대기중"}</div>
+                <div className='people'>{room.curPlayerCount} / 2</div>
+                <div className='state'>{room.isStarted ? "게임중" : "대기중"}</div>
             </div>
         ));
         return(
@@ -118,3 +118,5 @@ export default connect(mapStateToProps, mapDispatchToProps)(Main)
 새로고침 /api/room/refresh
 방 제거 /api/room/remove
 */
+
+// TODO : 방장 닉네임도 방 목록에서 보이게 추가 (현재 플레이어 왼쪽에)
