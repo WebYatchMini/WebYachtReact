@@ -87,7 +87,7 @@ class Main extends Component {
             headers: { 'Content-Type': 'application/json' },
             body : JSON.stringify({
                 title: this.state.roomTitle,
-                pw : (this.state.pwCheck ? this.state.roomPw : null)
+                roomPwd : (this.state.pwCheck ? this.state.roomPw : null)
             })
         }
         fetch('/api/room/make', requstOption)
