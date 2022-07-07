@@ -56,7 +56,7 @@ class Main extends Component {
                 roomPw: '',
                 modalShow: false,
                 pwCheck: false,
-                roomArray: data
+                roomArray: data === null ? [] : data
             }
         })
     }
@@ -107,19 +107,16 @@ class Main extends Component {
     render() {
         const { storeUid, storeNickname, storeWin, storeLose, storeLogin, resetStore } = this.props;
         let roomidx = 0;
-        let roomList;
-        if (this.state.roomArray != null) {
-            roomList = Array.from(this.state.roomArray).map(room => (
-                <div className='room'>
-                    <div className='password'>{room.locked ? <i className="bi bi-lock-fill"></i> : <i className="bi bi-unlock-fill"></i>}</div>
-                    <div className='number'>{('000000' + (roomidx = roomidx + 1).toString()).slice(-6)}</div>
-                    <div className='title'>{room.title}</div>
-                    <div className='owner'>{room.organizerName}</div>
-                    <div className='people'>{room.curPlayerCount} / 2</div>
-                    <div className='state'>{room.isStarted ? "게임중" : "대기중"}</div>
-                </div>
-            ));
-        }
+        let roomList = Array.from(this.state.roomArray).map(room => (
+            <div className='room'>
+                <div className='password'>{room.locked ? <i className="bi bi-lock-fill"></i> : <i className="bi bi-unlock-fill"></i>}</div>
+                <div className='number'>{('000000' + (roomidx = roomidx + 1).toString()).slice(-6)}</div>
+                <div className='title'>{room.title}</div>
+                <div className='owner'>{room.organizerName}</div>
+                <div className='people'>{room.curPlayerCount} / 2</div>
+                <div className='state'>{room.isStarted ? "게임중" : "대기중"}</div>
+            </div>
+        ));
         return(
             <div className='common'>
                 {(() => {
