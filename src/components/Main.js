@@ -46,20 +46,18 @@ function CreateRoomModal(props) {
 }
 
 class Main extends Component {
-    state = {
-        roomTitle: '',
-        roomPw: '',
-        modalShow: false,
-        pwCheck: false,
-        roomArray: []
-    }
-
     constructor(props) {
         super(props);
         fetch('api/room/refresh')
         .then(res => res.json())
         .then(data => {
-            this.state.roomArray = data;
+            this.state = {
+                roomTitle: '',
+                roomPw: '',
+                modalShow: false,
+                pwCheck: false,
+                roomArray: data
+            }
         })
     }
 
