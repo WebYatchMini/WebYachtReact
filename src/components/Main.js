@@ -46,18 +46,21 @@ function CreateRoomModal(props) {
 }
 
 class Main extends Component {
+    state = {
+        roomTitle: '',
+        roomPw: '',
+        modalShow: false,
+        pwCheck: false,
+        roomArray: []
+    }
+
     constructor(props) {
         super(props);
+        this.handleRefresh();
         fetch('api/room/refresh')
         .then(res => res.json())
         .then(data => {
-            this.state = {
-                roomTitle: '',
-                roomPw: '',
-                modalShow: false,
-                pwCheck: false,
-                roomArray: data === null ? [] : data
-            }
+            this.state.roomArray = data;
         })
     }
 
@@ -76,7 +79,6 @@ class Main extends Component {
         fetch('api/room/refresh')
         .then(res => res.json())
         .then(data => {
-            console.log(data)
             this.setState({
                 ...this.state,
                 roomArray: data
@@ -169,7 +171,9 @@ class Main extends Component {
                         <div className='sideLogo'>SIDE MENU</div>
                         <ul>
                             <li><button><i className="bi bi-door-open-fill"></i> ROOM JOIN</button></li>
-                            <li><button><i className="bi bi-arrow-clockwise"></i> LIST REFRESH</button></li>
+                            <li><button><i className="bi bi-arrow-clockwise"
+                            onClick={this.handleRefresh}
+                            ></i> LIST REFRESH</button></li>
                             <li><button onClick={() => {
                                 this.setState({
                                     ...this.state,
