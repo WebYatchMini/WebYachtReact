@@ -167,9 +167,7 @@ class Main extends Component {
                         <div className='sideLogo'>SIDE MENU</div>
                         <ul>
                             <li><button><i className="bi bi-door-open-fill"></i> ROOM JOIN</button></li>
-                            <li><button><i className="bi bi-arrow-clockwise"
-                            onClick={this.handleRefresh}
-                            ></i> LIST REFRESH</button></li>
+                            <li><button onClick={this.handleRefresh}><i className="bi bi-arrow-clockwise"></i> LIST REFRESH</button></li>
                             <li><button onClick={() => {
                                 this.setState({
                                     modalShow: true,
