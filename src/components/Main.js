@@ -130,7 +130,7 @@ class Main extends Component {
                         modalShow: false,
                     })
                 }}
-                handleCreate={this.handleChange}
+                handleCreate={this.handleCreate}
                 handleChange={this.handleChange}
                 />
                 <div className='container-fluid' id='container'>
