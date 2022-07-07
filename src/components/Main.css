@@ -73,9 +73,9 @@ html, body {
 
     display: grid;
     flex-direction: row;
-    grid-template-columns: 0.45fr 0.55fr 5fr 1fr 1fr;
+    grid-template-columns: 0.45fr 0.55fr 4fr 1fr 1fr 1fr;
     grid-template-areas: 
-    "password number title people state";
+    "password number title owner people state";
 
     align-items: center;
     cursor: default;
@@ -91,6 +91,9 @@ html, body {
 #lobby .roomIndex .title {
     grid-area: title;
     text-align: center;
+}
+#lobby .roomIndex .owner {
+    grid-area: owner;
 }
 #lobby .roomIndex .people {
     grid-area: people;
@@ -114,9 +117,9 @@ html, body {
 
     display: grid;
     flex-direction: row;
-    grid-template-columns: 0.33fr 0.66fr 5fr 1fr 1fr;
+    grid-template-columns: 0.33fr 0.66fr 4fr 1fr 1fr 1fr;
     grid-template-areas: 
-    "password number title people state";
+    "password number title owner people state";
 
     align-items: center;
 }
@@ -135,6 +138,9 @@ html, body {
 #lobby #roomList .room .title {
     grid-area: title;
     text-align: center;
+}
+#lobby #roomList .room .owner {
+    grid-area: owner;
 }
 #lobby #roomList .room .people {
     grid-area: people;

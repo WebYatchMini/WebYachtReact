@@ -40,6 +40,7 @@ class Main extends Component {
                 <div className='password'>{room.locked ? <i className="bi bi-lock-fill"></i> : <i className="bi bi-unlock-fill"></i>}</div>
                 <div className='number'>{('000000' + (roomidx = roomidx + 1).toString()).slice(-6)}</div>
                 <div className='title'>{room.title}</div>
+                <div className='owner'>{room.organizerName}</div>
                 <div className='people'>{room.curPlayerCount} / 2</div>
                 <div className='state'>{room.isStarted ? "게임중" : "대기중"}</div>
             </div>
@@ -55,6 +56,7 @@ class Main extends Component {
                             <div className='password'><i className="bi bi-lock-fill"></i> / <i className="bi bi-unlock-fill"></i></div>
                             <div className='number'>Room No.</div>
                             <div className='title'>Title</div>
+                            <div className='owner'>Owner</div>
                             <div className='people'>Player</div>
                             <div className='state'>State</div>
                         </div>
@@ -64,6 +66,7 @@ class Main extends Component {
                                 <div className='password'><i className="bi bi-lock-fill"></i></div>
                                 <div className='number'>000001</div>
                                 <div className='title'>제목</div>
+                                <div className='owner'>testid3</div>
                                 <div className='people'>1 / 2</div>
                                 <div className='state'>대기중</div>
                             </div> */}
