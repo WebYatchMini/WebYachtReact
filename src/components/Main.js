@@ -66,7 +66,6 @@ class Main extends Component {
 
     handlePwCheck = () => {
         this.setState({
-            ...this.state,
             pwCheck: !this.state.pwCheck,
         })
     }
@@ -80,7 +79,6 @@ class Main extends Component {
         .then(res => res.json())
         .then(data => {
             this.setState({
-                ...this.state,
                 roomArray: data
             })
         })
@@ -97,8 +95,7 @@ class Main extends Component {
         fetch('/api/room/make', requstOption)
         .then(res => res.json())
         .then(() => {
-            this.props.navigate('/');
-            // window.location.href = '/'
+            this.handleRefresh();
         })
     }
     handleLogout = () => {
@@ -130,7 +127,6 @@ class Main extends Component {
                 handlePwCheck={this.handlePwCheck}
                 onHide={() => {
                     this.setState({
-                        ...this.state,
                         modalShow: false,
                     })
                 }}
@@ -176,7 +172,6 @@ class Main extends Component {
                             ></i> LIST REFRESH</button></li>
                             <li><button onClick={() => {
                                 this.setState({
-                                    ...this.state,
                                     modalShow: true,
                                 })
                             }}

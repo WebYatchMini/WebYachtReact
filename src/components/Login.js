@@ -43,7 +43,7 @@ handleLogin = () => {
           setStoreMmr(data.mmr);  
           setStoreWin(data.win);
           setStoreLose(data.lose);
-          this.props.navigate('/');
+          this.props.navigate('/main');
           // window.location.href = '/';
         }
         else {
@@ -53,8 +53,8 @@ handleLogin = () => {
 
           // setStoreLoginTrue();
           // setStoreUid(this.state.id);
-          // // this.props.navigate('/');
-          // window.location.href = '/';
+          // this.props.navigate('/main');
+          // // window.location.href = '/';
   }
 
   render() {
@@ -62,7 +62,7 @@ handleLogin = () => {
     return (
       <div>
         {(() => {
-          if (storeLogin) return <Navigate to='/' replace={true}/>
+          if (storeLogin) return <Navigate to='/main' replace={true}/>
         })()}
         <div className="container " id="loginForm">
           <form>
