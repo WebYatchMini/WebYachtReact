@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { connect } from 'react-redux';
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import './login.css'
 
 import * as userAction from "../actions/user"
@@ -43,8 +43,8 @@ handleLogin = () => {
           setStoreMmr(data.mmr);  
           setStoreWin(data.win);
           setStoreLose(data.lose);
-          // this.props.navigate('/');
-          window.location.href = '/';
+          this.props.navigate('/');
+          // window.location.href = '/';
         }
         else {
           alert('아이디 혹은 비밀번호를 다시 확인해주세요');
@@ -138,9 +138,9 @@ const mapDispatchToProps = (dispatch) => ({
   increaseStroeLose: () => dispatch(userAction.increaseLose())
 })
 
-// export default function LoginWithNavigate(props) {
-//   const navigate = useNavigate();
-//   const LoginClass = connect(mapStateToProps, mapDispatchToProps)(Login);
-//   return <LoginClass navigate={navigate}/>
-// }
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default function LoginWithNavigate(props) {
+  const navigate = useNavigate();
+  const LoginClass = connect(mapStateToProps, mapDispatchToProps)(Login);
+  return <LoginClass navigate={navigate}/>
+}
+// export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { connect } from 'react-redux';
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import './Main.css'
@@ -97,13 +97,13 @@ class Main extends Component {
         fetch('/api/room/make', requstOption)
         .then(res => res.json())
         .then(() => {
-            window.location.href = '/'
+            this.props.navigate('/');
+            // window.location.href = '/'
         })
     }
     handleLogout = () => {
         fetch('/api/logout')
     }
-
 
 
     render() {
@@ -184,7 +184,8 @@ class Main extends Component {
                             <li><button onClick={() => {
                                 this.handleLogout();
                                 resetStore();
-                                window.location.href = '/login';
+                                this.props.navigate('/login');
+                                // window.location.href = '/login';
                             }}
                             ><i className="bi bi-box-arrow-right"></i> LOGOUT</button></li>
                             <li><button><i className="bi bi-question-circle-fill"></i> HELP</button></li>
@@ -209,7 +210,12 @@ const mapDispatchToProps = (dispatch) => ({
     resetStore: () => dispatch(userAction.reset())
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main)
+export default function MainWithNavigate(props) {
+    const navigate = useNavigate();
+    const MainClass = connect(mapStateToProps, mapDispatchToProps)(Main)
+    return <MainClass navigate={navigate}/>
+}
+// export default connect(mapStateToProps, mapDispatchToProps)(Main)
 
 /*
 방 생성 /api/room/make  => post
