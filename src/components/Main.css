@@ -217,3 +217,7 @@ html, body {
     color: white;
     border-bottom: solid white 1px;
 }
+
+#createForm span {
+    width: 100px;
+}
