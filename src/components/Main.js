@@ -56,7 +56,6 @@ class Main extends Component {
 
     constructor(props) {
         super(props);
-        this.handleRefresh();
         fetch('api/room/refresh')
         .then(res => res.json())
         .then(data => {
