@@ -132,7 +132,7 @@ class Main extends Component {
                 handleCreate={this.handleCreate}
                 handleChange={this.handleChange}
                 />
-                <div className='container-fluid' id='container'>
+                <div className='container-fluid' id='lobbyContainer'>
                     <div className='test' id='lobby'>
                         <div className='roomIndex'>
                             <div className='password'><i className="bi bi-lock-fill"></i> / <i className="bi bi-unlock-fill"></i></div>
@@ -217,4 +217,4 @@ export default function MainWithNavigate(props) {
 방 제거 /api/room/remove => 아직 모름
 */
 
-// TODO : 방장 닉네임도 방 목록에서 보이게 추가 (현재 플레이어 왼쪽에)
+// TODO : 방 입장 구현
