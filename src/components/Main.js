@@ -102,17 +102,38 @@ class Main extends Component {
         selectedRoomIdx: -1,
         nonSelectedModalShow: false,
         JoinRoomPwd: '',
-        roomArray: []
+        roomArray: [{
+            roomCode: "123456",
+            title: "test1",
+            organizerName: "test1",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test2",
+            organizerName: "test2",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test3",
+            organizerName: "test3",
+            curPlayerCount: 1,
+            locked: false,
+            started: false,
+        }]
     }
 
-    constructor(props) {
-        super(props);
-        fetch('api/room/refresh')
-        .then(res => res.json())
-        .then(data => {
-            this.state.roomArray = data;
-        })
-    }
+    // constructor(props) {
+    //     super(props);
+    //     fetch('api/room/refresh')
+    //     .then(res => res.json())
+    //     .then(data => {
+    //         this.state.roomArray = data;
+    //     })
+    // }
 
     handlePwCheck = (prevState) => {
         this.setState({
@@ -153,7 +174,6 @@ class Main extends Component {
                 selectedRoomIdx: -1,
                 nonSelectedModalShow: false,
                 JoinRoomPwd: '',
-                roomArray: []
             })
             this.handleRefresh();
         })
@@ -207,12 +227,11 @@ class Main extends Component {
 
     render() {
         const { storeUid, storeNickname, storeWin, storeLose, storeLogin, resetStore } = this.props;
-        let roomidx = 0;
-        let roomList = Array.from(this.state.roomArray).map(room => (
-            <div className={this.state.selectedRoomIdx === roomidx ? `room selected` : `room`} onClick={() => {
-                if (this.state.selectedRoomIdx !== roomidx) {
+        let roomList = Array.from(this.state.roomArray).map((room, index) => (
+            <div className={this.state.selectedRoomIdx === index ? `room selected` : `room`} onClick={() => {
+                if (this.state.selectedRoomIdx !== index) {
                     this.setState({
-                        selectedRoomIdx: roomidx
+                        selectedRoomIdx: index
                     });
                 }
                 else {
@@ -220,9 +239,10 @@ class Main extends Component {
                         selectedRoomIdx: -1
                     })
                 }
+                console.log(index);
             }}>
                 <div className='password'>{room.locked ? <i className="bi bi-lock-fill"></i> : <i className="bi bi-unlock-fill"></i>}</div>
-                <div className='number'>{('000000' + (roomidx = roomidx + 1).toString()).slice(-6)}</div>
+                <div className='number'>{('000000' + (index + 1).toString()).slice(-6)}</div>
                 <div className='title'>{room.title}</div>
                 <div className='owner'>{room.organizerName}</div>
                 <div className='people'>{room.curPlayerCount} / 2</div>
