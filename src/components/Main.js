@@ -156,7 +156,7 @@ class Main extends Component {
             })
         }
         else {
-            if (this.state.roomArray[idx].isLocked) {
+            if (this.state.roomArray[idx].locked) {
                 this.setState({
                     joinPwdModalShow: true
                 })
@@ -216,7 +216,7 @@ class Main extends Component {
                 <div className='title'>{room.title}</div>
                 <div className='owner'>{room.organizerName}</div>
                 <div className='people'>{room.curPlayerCount} / 2</div>
-                <div className='state'>{room.isStarted ? "게임중" : "대기중"}</div>
+                <div className='state'>{room.started ? "게임중" : "대기중"}</div>
             </div>
         ));
         return(
@@ -353,3 +353,11 @@ export default function MainWithNavigate(props) {
 
 // TODO : 방 입장 구현
 
+/* 방 정보 필드값
+    private final String roomCode;
+    private final String title;
+    private final boolean isLocked;     => locked로 옴
+    private final String organizerName;
+    private final boolean isStarted;    => started로 옴
+    private final int curPlayerCount;
+*/
