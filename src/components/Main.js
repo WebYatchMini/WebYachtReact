@@ -199,12 +199,18 @@ class Main extends Component {
         const { storeUid, storeNickname, storeWin, storeLose, storeLogin, resetStore } = this.props;
         let roomidx = 0;
         let roomList = Array.from(this.state.roomArray).map(room => (
-            <div className='room' onClick={() => {
-                this.setState({
-                selectedRoomIdx: roomidx
-            });
-            console.log(this.state);
-        }}>
+            <div className={this.state.selectedRoomIdx === roomidx ? `room selected` : `room`} onClick={() => {
+                if (this.state.selectedRoomIdx !== roomidx) {
+                    this.setState({
+                        selectedRoomIdx: roomidx
+                    });
+                }
+                else {
+                    this.setState({
+                        selectedRoomIdx: -1
+                    })
+                }
+            }}>
                 <div className='password'>{room.locked ? <i className="bi bi-lock-fill"></i> : <i className="bi bi-unlock-fill"></i>}</div>
                 <div className='number'>{('000000' + (roomidx = roomidx + 1).toString()).slice(-6)}</div>
                 <div className='title'>{room.title}</div>
@@ -260,7 +266,7 @@ class Main extends Component {
                         </div>
                         <div id='roomList'>
                             {roomList}
-                            <div className={this.state.selectedRoomIdx === 0 ? `room selected` : `room`} onClick={() => {
+                            {/* <div className={this.state.selectedRoomIdx === 0 ? `room selected` : `room`} onClick={() => {
                                 if (this.state.selectedRoomIdx !== 0) {
                                     this.setState({
                                         selectedRoomIdx: 0
@@ -278,64 +284,7 @@ class Main extends Component {
                                 <div className='owner'>testid3</div>
                                 <div className='people'>1 / 2</div>
                                 <div className='state'>대기중</div>
-                            </div>
-                            <div className={this.state.selectedRoomIdx === 1 ? `room selected` : `room`} onClick={() => {
-                                if (this.state.selectedRoomIdx !== 1) {
-                                    this.setState({
-                                        selectedRoomIdx: 1
-                                    });
-                                }
-                                else {
-                                    this.setState({
-                                        selectedRoomIdx: -1
-                                    })
-                                }
-                            }}>
-                                <div className='password'><i className="bi bi-lock-fill"></i></div>
-                                <div className='number'>000001</div>
-                                <div className='title'>제목</div>
-                                <div className='owner'>testid3</div>
-                                <div className='people'>1 / 2</div>
-                                <div className='state'>대기중</div>
-                            </div>
-                            <div className={this.state.selectedRoomIdx === 2 ? `room selected` : `room`} onClick={() => {
-                                if (this.state.selectedRoomIdx !== 2) {
-                                    this.setState({
-                                        selectedRoomIdx: 2
-                                    });
-                                }
-                                else {
-                                    this.setState({
-                                        selectedRoomIdx: -1
-                                    })
-                                }
-                            }}>
-                                <div className='password'><i className="bi bi-lock-fill"></i></div>
-                                <div className='number'>000001</div>
-                                <div className='title'>제목</div>
-                                <div className='owner'>testid3</div>
-                                <div className='people'>1 / 2</div>
-                                <div className='state'>대기중</div>
-                            </div>
-                            <div className={this.state.selectedRoomIdx === 3 ? `room selected` : `room`} onClick={() => {
-                                if (this.state.selectedRoomIdx !== 3) {
-                                    this.setState({
-                                        selectedRoomIdx: 3
-                                    });
-                                }
-                                else {
-                                    this.setState({
-                                        selectedRoomIdx: -1
-                                    })
-                                }
-                            }}>
-                                <div className='password'><i className="bi bi-lock-fill"></i></div>
-                                <div className='number'>000001</div>
-                                <div className='title'>제목</div>
-                                <div className='owner'>testid3</div>
-                                <div className='people'>1 / 2</div>
-                                <div className='state'>대기중</div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className='test' id='myInfo'>
