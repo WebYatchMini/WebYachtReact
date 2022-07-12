@@ -105,14 +105,14 @@ class Main extends Component {
         roomArray: []
     }
 
-    // constructor(props) {
-    //     super(props);
-    //     fetch('api/room/refresh')
-    //     .then(res => res.json())
-    //     .then(data => {
-    //         this.state.roomArray = data;
-    //     })
-    // }
+    constructor(props) {
+        super(props);
+        fetch('api/room/refresh')
+        .then(res => res.json())
+        .then(data => {
+            this.state.roomArray = data;
+        })
+    }
 
     handlePwCheck = (prevState) => {
         this.setState({
@@ -218,7 +218,6 @@ class Main extends Component {
                         selectedRoomIdx: -1
                     })
                 }
-                console.log(index);
             }}>
                 <div className='password'>{room.locked ? <i className="bi bi-lock-fill"></i> : <i className="bi bi-unlock-fill"></i>}</div>
                 <div className='number'>{('000000' + (index + 1).toString()).slice(-6)}</div>
