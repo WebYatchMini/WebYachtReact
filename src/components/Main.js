@@ -139,12 +139,22 @@ class Main extends Component {
             headers: { 'Content-Type': 'application/json' },
             body : JSON.stringify({
                 title: this.state.CreateRoomTitle,
-                roomPwd : (this.state.pwCheck ? this.state.CreateRoomPw : null)
+                roomPwd : (this.state.CreatePwCheck ? this.state.CreateRoomPw : null)
             })
         }
         fetch('/api/room/make', requstOption)
         .then(res => res.json())
         .then(() => {
+            this.setState({
+                CreateRoomTitle: '',
+                CreateRoomPw: '',
+                CreateModalShow: false,
+                CreatePwCheck: false,
+                selectedRoomIdx: -1,
+                nonSelectedModalShow: false,
+                JoinRoomPwd: '',
+                roomArray: []
+            })
             this.handleRefresh();
         })
     }
@@ -226,7 +236,7 @@ class Main extends Component {
                 })()}
                 <CreateRoomModal 
                 show={this.state.CreateModalShow}
-                pwCheck={this.state.pwCheck}
+                pwCheck={this.state.CreatePwCheck}
                 handlePwCheck={this.handlePwCheck}
                 onHide={() => {
                     this.setState({
