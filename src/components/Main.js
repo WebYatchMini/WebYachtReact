@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button'
 import './Main.css'
 
 import * as userAction from "../actions/user"
+import * as socketAction from "../actions/socket"
 
 function CreateRoomModal(props) {
     return (
@@ -144,18 +145,7 @@ class Main extends Component {
         }
         fetch('/api/room/make', requstOption)
         .then(res => res.json())
-        .then(() => {
-            this.setState({
-                CreateRoomTitle: '',
-                CreateRoomPw: '',
-                CreateModalShow: false,
-                CreatePwCheck: false,
-                selectedRoomIdx: -1,
-                nonSelectedModalShow: false,
-                JoinRoomPwd: '',
-            })
-            this.handleRefresh();
-        })
+        // 성공시, 페이지 이동하게끔 코드 작성하기
     }
     handleJoin = () => {
         const idx = this.state.selectedRoomIdx;
@@ -182,6 +172,7 @@ class Main extends Component {
                 fetch('api/room/join', requstOption)
                 .then(res => res.json())
                 .then(data => console.log(data))
+                // 성공시 페이지 이동하게끔 코드 작성하기
             }
         }
     }
@@ -197,6 +188,7 @@ class Main extends Component {
         fetch('api/room/join', requstOption)
         .then(res => res.json())
         .then(data => console.log(data))
+        // 성공시 페이지 이동하게끔 코드 작성하기
     }
     
     handleLogout = () => {
@@ -205,7 +197,7 @@ class Main extends Component {
 
 
     render() {
-        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, resetStore } = this.props;
+        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeSocket, resetStore, connectStore } = this.props;
         let roomList = Array.from(this.state.roomArray).map((room, index) => (
             <div className={this.state.selectedRoomIdx === index ? `room selected` : `room`} onClick={() => {
                 if (this.state.selectedRoomIdx !== index) {
@@ -336,11 +328,13 @@ const mapStateToProps = (state) => ({
     storeMMR: state.user.mmr,
     storeWin: state.user.win,
     storeLose: state.user.lose,
-    storeLogin: state.user.login
+    storeLogin: state.user.login,
+    storeSocket: state.socket.client
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    resetStore: () => dispatch(userAction.reset())
+    resetStore: () => dispatch(userAction.reset()),
+    connectStore: () => dispatch(socketAction.connect())
 })
 
 export default function MainWithNavigate(props) {
@@ -359,7 +353,7 @@ export default function MainWithNavigate(props) {
 방 나가기 /room/exit이랑 roomCode
 */
 
-// TODO : 방 입장 구현
+// TODO : 방 입장 구현 + 소켓 생성
 
 /* 방 정보 필드값
     private final String roomCode;
@@ -368,4 +362,29 @@ export default function MainWithNavigate(props) {
     private final String organizerName;
     private final boolean isStarted;    => started로 옴
     private final int curPlayerCount;
+*/
+
+/* 시험용 데이터
+{
+            roomCode: "123456",
+            title: "test1",
+            organizerName: "test1",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test2",
+            organizerName: "test2",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test3",
+            organizerName: "test3",
+            curPlayerCount: 1,
+            locked: false,
+            started: false,
+        }
 */
