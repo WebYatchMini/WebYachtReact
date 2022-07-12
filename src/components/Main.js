@@ -105,14 +105,14 @@ class Main extends Component {
         roomArray: []
     }
 
-    // constructor(props) {
-    //     super(props);
-    //     fetch('api/room/refresh')
-    //     .then(res => res.json())
-    //     .then(data => {
-    //         this.state.roomArray = data;
-    //     })
-    // }
+    constructor(props) {
+        super(props);
+        fetch('api/room/refresh')
+        .then(res => res.json())
+        .then(data => {
+            this.state.roomArray = data;
+        })
+    }
 
     handlePwCheck = (prevState) => {
         this.setState({
