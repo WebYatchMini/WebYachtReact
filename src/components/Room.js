@@ -30,14 +30,30 @@ function ExitModal(props) {
         </Modal>
     );
 }
+function TestModal(props) {
+    return (
+        <Modal 
+        {...props}
+        size='lg'
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        >
+            <Modal.Body>
+                <div>
+                    <input></input>
+                </div>
+            </Modal.Body>
+        </Modal>
+    );
+}
+
 
 class Room extends Component {
     state = {
         roomTitle: '',
-        roomPw: '',
-        modalShow: false,
-        pwCheck: false,
-        roomArray: []
+        ExitmodalShow: false,
+        TestModalShow: false,
+        game: false,
     }
 
     handleChange = (e) => {
@@ -55,16 +71,28 @@ class Room extends Component {
                     if (!storeLogin) return <Navigate to='/login' replace={true}/>
                 })()}
                 <ExitModal 
-                show={this.state.modalShow}
+                show={this.state.ExitmodalShow}
                 pwCheck={this.state.pwCheck}
                 handlePwCheck={this.handlePwCheck}
                 onHide={() => {
                     this.setState({
-                        modalShow: false,
+                        ExitmodalShow: false,
                     })
                 }}
                 handleCreate={this.handleCreate}
                 handleChange={this.handleChange}
+                />
+                <TestModal
+                backdrop="static"
+                keyboard={false}
+                animation={false}
+                fullscreen={true}
+                show={this.state.TestmodalShow}
+                onHide={() => {
+                    this.setState({
+                        TestmodalShow: false,
+                    })
+                }}
                 />
                 <div className='container-fluid' id='roomContainer'>
                     <div className='test' id='header'>
@@ -86,8 +114,17 @@ class Room extends Component {
                     </div>
                     <div className='test' id='menu'>
                         <div>
-                            <button></button>
-                            <button></button>
+                            <button onClick={() => {
+                                this.setState({
+                                    ExitmodalShow: true
+                                })
+                            }}
+                            >ExitModal</button>
+                            <button onClick={() => {
+                                this.setState({
+                                    TestmodalShow: true
+                                })
+                            }}>TestModal</button>
                         </div>
                     </div>
                     <div className='test' id='chat'>
@@ -116,6 +153,3 @@ export default function RoomWithNavigate(props) {
     const MainClass = connect(mapStateToProps, mapDispatchToProps)(Room)
     return <MainClass navigate={navigate}/>
 }
-// export default connect(mapStateToProps, mapDispatchToProps)(Main)
-
-// TODO : 방장 닉네임도 방 목록에서 보이게 추가 (현재 플레이어 왼쪽에)
