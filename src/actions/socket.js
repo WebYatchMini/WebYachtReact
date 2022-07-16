@@ -17,15 +17,16 @@ export const disconnect = () => {
     }
 }
 
-export const subscribe = () => {
+export const subscribe = (roomNum) => {
     return {
-        type: SUBSCRIBE
+        type: SUBSCRIBE,
+        roomNum: roomNum
     }
 }
 
 export const publish = (data) => {
     return {
         type: PUBLISH,
-        data
+        data: data
     }
 }

@@ -1,6 +1,6 @@
 import * as socketAction from '../actions/socket';
-import * as StompJs from "@stomp/stompjs";
-import * as SockJS from "sockjs-client";
+import * as StompJs from '@stomp/stompjs';
+import * as SockJS from 'sockjs-client';
 
 const initStates = {
     client: null,
@@ -11,7 +11,7 @@ const reducers = (state = initStates, action) => {
         case socketAction.CONNECT: {
             const tempClient =  new StompJs.Client({
                 // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-                webSocketFactory: () => new SockJS("/ws-stomp"),    // proxy를 통한 접속
+                webSocketFactory: () => new SockJS("/ws-stomp/stomp/chat"),    // proxy를 통한 접속
                 connectHeaders: {
                 },
                 debug: (str) => {
@@ -21,7 +21,7 @@ const reducers = (state = initStates, action) => {
                 heartbeatIncoming: 4000,
                 heartbeatOutgoing: 4000,
                 onConnect: () => {
-
+                    console.log("connected")
                 },
                 onStompError: () => {
 
@@ -43,9 +43,16 @@ const reducers = (state = initStates, action) => {
         }
         case socketAction.SUBSCRIBE: {
             const tempClient = state.client;
-            // tempClient.current.subscribe(`/sub/chat/${ROOM_SEQ}`, ({ body }) => {
-            //     setChatMessages((_chatMessages) => [..._chatMessages, JSON.parse(body)]);
-            // });
+            tempClient.current.subscribe(`/sub/chat/${action.roomNum}`, ({ body }) => {
+                
+            });
+            return {
+                ...state
+            }
+        }
+        case socketAction.PUBLISH: {
+            const tempClient = state.client;
+            // tempClient.send();
             return {
                 ...state
             }
