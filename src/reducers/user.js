@@ -74,4 +74,4 @@ const reducers = (state = initStates, action) => {
     }
 }
 
-export default reducers;
+export default reducers;    

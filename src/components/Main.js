@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 import './Main.css'
 
 import * as userAction from "../actions/user"
-import * as socketAction from "../actions/socket"
+import * as roomAction from "../actions/room"
 
 function CreateRoomModal(props) {
     return (
@@ -103,7 +103,28 @@ class Main extends Component {
         selectedRoomIdx: -1,
         nonSelectedModalShow: false,
         JoinRoomPwd: '',
-        roomArray: []
+        roomArray: [{
+            roomCode: "123456",
+            title: "test1",
+            organizerName: "test1",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test2",
+            organizerName: "test2",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test3",
+            organizerName: "test3",
+            curPlayerCount: 1,
+            locked: false,
+            started: false,
+        }]
     }
 
     constructor(props) {
@@ -161,30 +182,35 @@ class Main extends Component {
                 })
             }
             else {
-                const roomCode = this.state.roomArray[this.state.selectedRoomIdx].roomCode;
-                const requstOption = {
-                    method : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body : JSON.stringify({
-                        roomCode : roomCode,
-                        roomPwd : null
-                    })
-                }
-                fetch('api/room/join', requstOption)
-                .then(res => res.json())
-                .then(data => (data) => {
-                    console.log(data);
-                    this.props.connectStore();
-                    this.props.subscribStore(roomCode, this.props.storeNickname, "");
-                    // this.props.navigate('/room');
-                })
-                // 성공시 페이지 이동하게끔 코드 작성하기
+                const roomCode = this.state.roomArray[idx].roomCode;
+                const roomTitle = this.state.roomArray[idx].title;
+                // const requstOption = {
+                //     method : 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body : JSON.stringify({
+                //         roomCode : roomCode,
+                //         roomPwd : null
+                //     })
+                // }
+                // fetch('api/room/join', requstOption)
+                // .then(res => res.json())
+                // .then(data => (data) => {
+                //     console.log(data);
+                //     this.props.navigate('/room');
+                // })
+                // 성공시 페이지 이동하게끔 코드 작성하기 -> 방에 이동하고 나서 소켓연결
+                // + 방 정보 리덕스에 저장해주기
                 // 실패시 참가 실패 메세지
+                this.props.setRoomCodeStore(roomCode);
+                this.props.setRoomTitleStore(roomTitle);
+                this.props.navigate('/room');
             }
         }
     }
     handleJoinPwd = () => {
-        const roomCode = this.state.roomArray[this.state.selectedRoomIdx].roomCode;
+        const idx = this.state.selectedRoomIdx
+        const roomCode = this.state.roomArray[idx].roomCode;
+        const roomTitle = this.state.roomArray[idx].title;
         const requstOption = {
             method : 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -197,10 +223,10 @@ class Main extends Component {
         .then(res => res.json())
         .then(data => (data) => {
             console.log(data);
-            this.props.connectStore();
-            this.props.subscribStore(roomCode, this.props.storeNickname, "");
-            // this.props.navigate('/room');
-        })
+            this.props.setRoomCodeStore(roomCode);
+            this.props.setRoomTitleStore(roomTitle);
+            this.props.navigate('/room');
+        })  
         // 성공시 페이지 이동하게끔 코드 작성하기
         // 실패시 참가 실패 메세지
     }
@@ -211,7 +237,7 @@ class Main extends Component {
 
 
     render() {
-        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeSocket, resetStore, connectStore } = this.props;
+        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, resetStore  } = this.props;
         let roomList = Array.from(this.state.roomArray).map((room, index) => (
             <div className={this.state.selectedRoomIdx === index ? `room selected` : `room`} onClick={() => {
                 if (this.state.selectedRoomIdx !== index) {
@@ -343,13 +369,12 @@ const mapStateToProps = (state) => ({
     storeWin: state.user.win,
     storeLose: state.user.lose,
     storeLogin: state.user.login,
-    storeSocket: state.socket.client
 })
 
 const mapDispatchToProps = (dispatch) => ({
     resetStore: () => dispatch(userAction.reset()),
-    connectStore: () => dispatch(socketAction.connect()),
-    subscribStore: (roomCode, sender, message) => dispatch(socketAction.subscribe(roomCode, sender, message))
+    setRoomCodeStore : (roomCode) => dispatch(roomAction.setRoomCode(roomCode)),
+    setRoomTitleStore: (roomTitle) => dispatch(roomAction.setRoomTitle(roomTitle))
 })
 
 export default function MainWithNavigate(props) {
@@ -380,7 +405,7 @@ export default function MainWithNavigate(props) {
 */
 
 /* 시험용 데이터
-{
+        {
             roomCode: "123456",
             title: "test1",
             organizerName: "test1",

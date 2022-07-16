@@ -9,7 +9,7 @@ module.exports = function(app){
     })
     );
     app.use(
-    'ws-stomp',
+    'stomp',
     createProxyMiddleware({
         target: "https://webyacht.herokuapp.com/:8080",
         ws: true

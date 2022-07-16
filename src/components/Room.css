@@ -23,15 +23,13 @@
     transform: translate(-50%, -50%);
 
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
-    grid-template-rows: 0.4fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 2fr 1fr 1fr 2fr;
+    grid-template-rows: 0.4fr 1fr 1fr 1fr;
     grid-template-areas: 
-    "header header header header header"
-    "user-1 user-1 blank user-2 user-2"
-    "user-1 user-1 menu user-2 user-2"
-    "user-1 user-1 menu user-2 user-2"
-    "chat chat chat chat chat"
-    "chat chat chat chat chat";
+    "header header header header header chat"
+    "user-1 user-1 blank user-2 user-2 chat"
+    "user-1 user-1 menu user-2 user-2 chat"
+    "user-1 user-1 menu user-2 user-2 chat";
     row-gap: 10px;
     column-gap: 10px;
 }
@@ -77,4 +75,55 @@
 
 #chat {
     grid-area: chat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#chat #chatList {
+    width: 95%;
+    height: 95%;
+    overflow-y: auto;
+}
+#chat #chatList::-webkit-scrollbar {
+    width: 10px;
+}
+#chat #chatList::-webkit-scrollbar-thumb {
+    background: white;
+    background-clip: padding-box;
+    border: 3px solid transparent;
+    border-radius: 7px;
+    width: 3px;
+}
+#chat #chatList::-webkit-scrollbar-track {
+    background: rgba(30, 30, 30, 0.85);
+    border-radius: 5px;
+    width: 3px;
+}
+#chat #chatList .chatBox {
+    display: flex;
+}
+#chat #chatList .chatBox.mine {
+    justify-content: flex-end;
+}
+#chat #chatList .chatBox.opponent {
+    justify-content: flex-start
+}
+#chat #chatList .chatBox .chat {
+    width: fit-content;
+    height: fit-content;
+    padding: 2.5px 10px 2.5px 10px;
+    margin: 10px 10px 10px 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+#chat #chatList .chatBox .chat.mine {
+    background-color: yellow;
+}
+#chat #chatList .chatBox .chat.opponent {
+    background-color: white;
+}
+#chat #chatForm {
+    width: 90%;
 }

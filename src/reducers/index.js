@@ -3,18 +3,18 @@ import { persistReducer } from "redux-persist";
 import storageSession from 'redux-persist/lib/storage/session';
 
 import user from './user'
-import socket from './socket'
+import room from './room'
 
 const persistConfig = {
   key: 'root',
   storage: storageSession,
-  whitelist: ["user", "socket"]
+  whitelist: ["user", "room"]
   // blacklist -> 그것만 제외
 };
 
 const rootReducer = combineReducers({
   user,
-  socket
+  room
 });
 
 export default persistReducer(persistConfig, rootReducer);
