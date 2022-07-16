@@ -103,28 +103,7 @@ class Main extends Component {
         selectedRoomIdx: -1,
         nonSelectedModalShow: false,
         JoinRoomPwd: '',
-        roomArray: [{
-            roomCode: "123456",
-            title: "test1",
-            organizerName: "test1",
-            curPlayerCount: 1,
-            locked: true,
-            started: false,
-        }, {
-            roomCode: "234567",
-            title: "test2",
-            organizerName: "test2",
-            curPlayerCount: 1,
-            locked: true,
-            started: false,
-        }, {
-            roomCode: "234567",
-            title: "test3",
-            organizerName: "test3",
-            curPlayerCount: 1,
-            locked: false,
-            started: false,
-        }]
+        roomArray: []
     }
 
     constructor(props) {
