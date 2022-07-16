@@ -171,7 +171,10 @@ class Main extends Component {
                 }
                 fetch('api/room/join', requstOption)
                 .then(res => res.json())
-                .then(data => console.log(data))
+                .then(data => (data) => {
+                    console.log(data);
+                    this.props.connectStore();
+                })
                 // 성공시 페이지 이동하게끔 코드 작성하기
             }
         }
@@ -187,7 +190,10 @@ class Main extends Component {
         }
         fetch('api/room/join', requstOption)
         .then(res => res.json())
-        .then(data => console.log(data))
+        .then(data => (data) => {
+            console.log(data);
+            this.props.connectStore();
+        })
         // 성공시 페이지 이동하게끔 코드 작성하기
     }
     
