@@ -25,36 +25,36 @@ class Login extends Component {
 
 handleLogin = () => {
     const { setStoreUid, setStoreNickname, setStoreLoginTrue, setStoreMmr, setStoreWin, setStoreLose } = this.props
-    // const requstOption = {
-    //   method : 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body : JSON.stringify({
-    //     id : this.state.id,
-    //     pw : this.state.pw
-    //   })
-    // }
-    // fetch('/api/login/', requstOption)
-    //   .then(res => res.json())
-    //   .then(data => {
-    //     if (data.status) {
-    //       setStoreLoginTrue();
-    //       setStoreUid(data.uid);
-    //       setStoreNickname(data.nickname);
-    //       setStoreMmr(data.mmr);  
-    //       setStoreWin(data.win);
-    //       setStoreLose(data.lose);
-    //       this.props.navigate('/main');
-    //       // window.location.href = '/';
-    //     }
-    //     else {
-    //       alert('아이디 혹은 비밀번호를 다시 확인해주세요');
-    //     }
-    //   });
-
+    const requstOption = {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body : JSON.stringify({
+        id : this.state.id,
+        pw : this.state.pw
+      })
+    }
+    fetch('/api/login/', requstOption)
+      .then(res => res.json())
+      .then(data => {
+        if (data.status) {
           setStoreLoginTrue();
-          setStoreUid(this.state.id);
+          setStoreUid(data.uid);
+          setStoreNickname(data.nickname);
+          setStoreMmr(data.mmr);  
+          setStoreWin(data.win);
+          setStoreLose(data.lose);
           this.props.navigate('/main');
           // window.location.href = '/';
+        }
+        else {
+          alert('아이디 혹은 비밀번호를 다시 확인해주세요');
+        }
+      });
+
+          // setStoreLoginTrue();
+          // setStoreUid(this.state.id);
+          // this.props.navigate('/main');
+          // // window.location.href = '/';
   }
 
   render() {
