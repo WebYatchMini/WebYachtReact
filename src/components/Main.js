@@ -161,11 +161,12 @@ class Main extends Component {
                 })
             }
             else {
+                const roomCode = this.state.roomArray[this.state.selectedRoomIdx].roomCode;
                 const requstOption = {
                     method : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body : JSON.stringify({
-                        roomCode : this.state.roomArray[this.state.selectedRoomIdx].roomCode,
+                        roomCode : roomCode,
                         roomPwd : null
                     })
                 }
@@ -174,17 +175,20 @@ class Main extends Component {
                 .then(data => (data) => {
                     console.log(data);
                     this.props.connectStore();
+                    this.props.subscribStore(roomCode, this.props.storeNickname, "");
+                    // this.props.navigate('/room');
                 })
                 // 성공시 페이지 이동하게끔 코드 작성하기
             }
         }
     }
     handleJoinPwd = () => {
+        const roomCode = this.state.roomArray[this.state.selectedRoomIdx].roomCode;
         const requstOption = {
             method : 'POST',
             headers: { 'Content-Type': 'application/json' },
             body : JSON.stringify({
-                roomCode : this.state.roomArray[this.state.selectedRoomIdx].roomCode,
+                roomCode : roomCode,
                 roomPwd : this.state.JoinRoomPwd
             })
         }
@@ -193,6 +197,8 @@ class Main extends Component {
         .then(data => (data) => {
             console.log(data);
             this.props.connectStore();
+            this.props.subscribStore(roomCode, this.props.storeNickname, "");
+            // this.props.navigate('/room');
         })
         // 성공시 페이지 이동하게끔 코드 작성하기
     }
@@ -340,7 +346,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     resetStore: () => dispatch(userAction.reset()),
-    connectStore: () => dispatch(socketAction.connect())
+    connectStore: () => dispatch(socketAction.connect()),
+    subscribStore: (roomCode, sender, message) => dispatch(socketAction.subscribe(roomCode, sender, message))
 })
 
 export default function MainWithNavigate(props) {
