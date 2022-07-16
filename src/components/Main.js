@@ -115,9 +115,9 @@ class Main extends Component {
         })
     }
 
-    handlePwCheck = (prevState) => {
+    handlePwCheck = () => {
         this.setState({
-            CreatePwCheck: !prevState.CreatePwCheck,
+            CreatePwCheck: !this.state.CreatePwCheck,
         })
     }
     handleChange = (e) => {
@@ -179,6 +179,7 @@ class Main extends Component {
                     // this.props.navigate('/room');
                 })
                 // 성공시 페이지 이동하게끔 코드 작성하기
+                // 실패시 참가 실패 메세지
             }
         }
     }
@@ -201,6 +202,7 @@ class Main extends Component {
             // this.props.navigate('/room');
         })
         // 성공시 페이지 이동하게끔 코드 작성하기
+        // 실패시 참가 실패 메세지
     }
     
     handleLogout = () => {
