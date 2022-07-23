@@ -1,6 +1,6 @@
 import { Component, createRef } from 'react'
 import { connect } from 'react-redux';
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, Route, Routes } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import './Room.css'
@@ -33,22 +33,42 @@ function ExitModal(props) {
         </Modal>
     );
 }
-function TestModal(props) {
+function ReadyArea(props) {
     return (
-        <Modal 
-        {...props}
-        size='lg'
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        >
-            <Modal.Body>
-                <div>
+        <div className='content' id='readyArea'>
+            <div className='test' id='header'>
+                {props.storeRoomTitle}
+            </div>
+            <div className='test' id='user-1'>
+                <div className='userInfo'>
+                    <div>{props.storeNickname}</div>
+                    <div>{props.storeWin}</div>
+                    <div>{props.storeLose}</div>
                 </div>
-            </Modal.Body>
-        </Modal>
+            </div>
+            <div className='test' id='user-2'>
+                <div className='userInfo'>
+                    <div>{props.opponentInfo.nickname}</div>
+                    <div>{props.opponentInfo.win}</div>
+                    <div>{props.opponentInfo.lose}</div>
+                </div>
+            </div>
+            <div className='test' id='menu'>
+                <div>
+                    <button onClick={props.handleExitRoom}>ExitModal</button>
+                    <button onClick={props.handleGameArea}>TestModal</button>
+                </div>
+            </div>
+        </div>
     );
 }
 
+function GameArea(props) {
+    return (
+        <div className='content test' id='gameArea'>
+        </div>
+    );
+}
 
 class Room extends Component {
     state = {
@@ -145,6 +165,7 @@ class Room extends Component {
         this.props.navigate('/main');
     }
 
+
     pressEnter = (e) => {
         if (e.key === 'Enter' && e.target.value.length !== 0) {
             this.sendMessage(e.target.value);
@@ -167,6 +188,15 @@ class Room extends Component {
             chatList.scrollTop = chatList.scrollHeight;
         })
     }
+
+    handleExitRoom = () => {
+        this.setState({
+            ExitmodalShow: true
+        })
+    }
+    handleGameArea = () => {
+        this.props.navigate('/room/game')
+    }
     render() {
         const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle } = this.props;
         let chatList = Array.from(this.state.chatList).map((chat) => (
@@ -188,51 +218,26 @@ class Room extends Component {
                 }}
                 handleExit={this.handleExit}
                 />
-                <TestModal
-                backdrop="static"
-                keyboard={false}
-                animation={false}
-                fullscreen={true}
-                show={this.state.TestmodalShow}
-                onHide={() => {
-                    this.setState({
-                        TestmodalShow: false,
-                    })
-                }}
-                />
                 <div className='container-fluid' id='roomContainer'>
-                    <div className='test' id='header'>
-                        {storeRoomTitle}
-                    </div>
-                    <div className='test' id='user-1'>
-                        <div className='userInfo'>
-                            <div>{storeNickname}</div>
-                            <div>{storeWin}</div>
-                            <div>{storeLose}</div>
-                        </div>
-                    </div>
-                    <div className='test' id='user-2'>
-                        <div className='userInfo'>
-                            <div>{this.state.opponentInfo.nickname}</div>
-                            <div>{this.state.opponentInfo.win}</div>
-                            <div>{this.state.opponentInfo.lose}</div>
-                        </div>
-                    </div>
-                    <div className='test' id='menu'>
-                        <div>
-                            <button onClick={() => {
-                                this.setState({
-                                    ExitmodalShow: true
-                                })
-                            }}
-                            >ExitModal</button>
-                            <button onClick={() => {
-                                this.setState({
-                                    TestmodalShow: true
-                                })
-                            }}>TestModal</button>
-                        </div>
-                    </div>
+                    {/* 방장이 게임 시작 -> 게임 모드로 들어가야 하는데 어떻게 해야할지 모르겠음 */}
+                    {/* 일단 하나 확실한건 Route로는 아무래도 좋은 방법은 아닌거 같음.*/}
+                    {/* Route 말고 이전에 했던 SPA 방식중에서 탭으로 이동해서 보이게 하는 방식이 적절해보임*/}
+                    <Routes>
+                        <Route exact path='/' 
+                        element={<ReadyArea
+                            storeNickname={storeNickname}
+                            storeWin={storeWin}
+                            storeLose={storeLose}
+                            storeRoomTitle={storeRoomTitle}
+                            opponentInfo={this.state.opponentInfo}
+                            handleExitRoom={this.handleExitRoom}
+                            handleGameArea={this.handleGameArea}
+                            />}
+                        />
+                        <Route path='/game'
+                        element={<GameArea/>}
+                        />
+                    </Routes>
                     <div className='test' id='chat'>
                         <div id='chatList'>{chatList}</div>
                         <div id='chatForm'>
@@ -267,4 +272,32 @@ export default function RoomWithNavigate(props) {
 }
 
 // TODO : 채팅창 디자인 / 채팅창 구현
-// socket 연결을 redux에 저장말고 여기서 하게끔 수정할 것.
+// socket 연결을 redux에 저장말고 여기서 하게끔 수정할 것
+
+/*
+        {
+            type: 1,
+            message: "opponent test"
+        },
+        {
+            type: 1,
+            message: "opponent test"
+        },
+        {
+            type: 0,
+            message: "my chat test"
+        },
+        {
+            type: 1,
+            message: "long message test long message test long message test long message test long message test"
+        },
+        {
+            type: 0,
+            message: "my chat test"
+        },
+        {
+            type: 0,
+            message: "my chat test"
+        },
+    채팅 테스트 데이터
+*/
