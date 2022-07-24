@@ -103,7 +103,28 @@ class Main extends Component {
         selectedRoomIdx: -1,
         nonSelectedModalShow: false,
         JoinRoomPwd: '',
-        roomArray: []
+        roomArray: [ {
+            roomCode: "123456",
+            title: "test1",
+            organizerName: "test1",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test2",
+            organizerName: "test2",
+            curPlayerCount: 1,
+            locked: true,
+            started: false,
+        }, {
+            roomCode: "234567",
+            title: "test3",
+            organizerName: "test3",
+            curPlayerCount: 1,
+            locked: false,
+            started: false,
+        }]
     }
 
     constructor(props) {
@@ -145,6 +166,12 @@ class Main extends Component {
         }
         fetch('/api/room/make', requstOption)
         .then(res => res.json())
+
+        // this.props.setRoomCodeStore(roomCode);
+        // => 성공시 받은 roomCode를 저장.
+        this.props.setRoomTitleStore(this.state.CreateRoomTitle);
+        this.props.setRoomOwnerOn();
+        this.props.navigate('/room')
         // 성공시, 페이지 이동하게끔 코드 작성하기
     }
     handleJoin = () => {
@@ -348,12 +375,15 @@ const mapStateToProps = (state) => ({
     storeWin: state.user.win,
     storeLose: state.user.lose,
     storeLogin: state.user.login,
+    storeIsRoomOwner: state.user.isRoomOwner
 })
 
 const mapDispatchToProps = (dispatch) => ({
     resetStore: () => dispatch(userAction.reset()),
     setRoomCodeStore : (roomCode) => dispatch(roomAction.setRoomCode(roomCode)),
-    setRoomTitleStore: (roomTitle) => dispatch(roomAction.setRoomTitle(roomTitle))
+    setRoomTitleStore: (roomTitle) => dispatch(roomAction.setRoomTitle(roomTitle)),
+    setRoomOwnerOnStore : () => dispatch(userAction.setRoomOwnerOn()),
+    setRoomOwnerOffStore : () => dispatch(userAction.setRoomOwnerOff())
 })
 
 export default function MainWithNavigate(props) {

@@ -41,6 +41,7 @@ function ReadyArea(props) {
             </div>
             <div className='test' id='user-1'>
                 <div className='userInfo'>
+                    <div className='HostMark'>{props.storeIsRoomOwner ? <i class="bi bi-star-fill"></i> : ""}</div>
                     <div>{props.storeNickname}</div>
                     <div>{props.storeWin}</div>
                     <div>{props.storeLose}</div>
@@ -48,6 +49,7 @@ function ReadyArea(props) {
             </div>
             <div className='test' id='user-2'>
                 <div className='userInfo'>
+                    <div className='HostMark'>{!props.storeIsRoomOwner ? <i class="bi bi-star-fill"></i> : ""}</div>
                     <div>{props.opponentInfo.nickname}</div>
                     <div>{props.opponentInfo.win}</div>
                     <div>{props.opponentInfo.lose}</div>
@@ -76,27 +78,33 @@ class Room extends Component {
         TestModalShow: false,
         game: false,
         chatList: [{
-            type: 1,
-            message: "opponent test"
-        },
-        {
-            type: 1,
+            type: 0,
+            sender: 1,
             message: "opponent test"
         },
         {
             type: 0,
+            sender: 1,
+            message: "opponent test"
+        },
+        {
+            type: 0,
+            sender: 0,
             message: "my chat test"
         },
         {
-            type: 1,
+            type: 0,
+            sender: 1,
             message: "long message test long message test long message test long message test long message test"
         },
         {
             type: 0,
+            sender: 0,
             message: "my chat test"
         },
         {
             type: 0,
+            sender: 0,
             message: "my chat test"
         },],
         opponentInfo: {
@@ -124,6 +132,8 @@ class Room extends Component {
             heartbeatOutgoing: 4000,
             onConnect: () => {
                 this.chatSubscribe();
+                // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
+                // 방 입장시 보내는 정보이므로, type: 1로 해서 보낼 것.
             },
             onStompError: (frame) => {
                 console.log(frame);
@@ -131,12 +141,22 @@ class Room extends Component {
         });
     }
     chatSubscribe = () => {
-        this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (body) => {
-            const chat = {
-                type: 1,
-                message: body
+        this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (data) => {
+            switch(data.type) {
+                case 0:
+                    // 채팅 데이터
+                    this.appendChatList(data)
+                    break;
+                case 1:
+                    // 상대방이 방 입장시 보내온 상대방의 정보 => 이 경우는 받고 내 정보를 보내주어야함
+                    // 이때 보내는 정보는 type: 2로 해서 보낼 것.
+                    break;
+                case 2:
+                    // 내가 입장했을 때, 방장이 보낸 방장의 정보 => 이 경우는 내 정보를 보낼 필요는 없음
+                    break;
+                default:
+                    break;
             }
-            this.appendChatList(chat);
         });
     }
     chatPublish = (m) => {
@@ -176,6 +196,7 @@ class Room extends Component {
         // this.chatPublish(message);
         const chat = {
             type: 0,
+            sender: 0,
             message: message
         }
         this.appendChatList(chat);
@@ -198,10 +219,10 @@ class Room extends Component {
         this.props.navigate('/room/game')
     }
     render() {
-        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle } = this.props;
+        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeIsRoomOwner, setRoomOwnerOffStore } = this.props;
         let chatList = Array.from(this.state.chatList).map((chat) => (
-            <div className={chat.type === 0 ? "chatBox mine" : "chatBox opponent"}>
-                <div className={chat.type === 0 ? "chat mine" : "chat opponent"}>{chat.message}</div>
+            <div className={chat.sender === 0 ? "chatBox mine" : "chatBox opponent"}>
+                <div className={chat.sender === 0 ? "chat mine" : "chat opponent"}>{chat.message}</div>
             </div>
         ));
         return(
@@ -229,6 +250,7 @@ class Room extends Component {
                             storeWin={storeWin}
                             storeLose={storeLose}
                             storeRoomTitle={storeRoomTitle}
+                            storeIsRoomOwner={storeIsRoomOwner}
                             opponentInfo={this.state.opponentInfo}
                             handleExitRoom={this.handleExitRoom}
                             handleGameArea={this.handleGameArea}
@@ -258,11 +280,13 @@ const mapStateToProps = (state) => ({
     storeLose: state.user.lose,
     storeLogin: state.user.login,
     storeRoomCode: state.room.roomCode,
-    storeRoomTitle: state.room.roomTitle
+    storeRoomTitle: state.room.roomTitle,
+    storeIsRoomOwner: state.user.isRoomOwner
 })
 
 const mapDispatchToProps = (dispatch) => ({
     resetStore: () => dispatch(userAction.reset()),
+    setRoomOwnerOffStore : () => dispatch(userAction.setRoomOwnerOff())
 })
 
 export default function RoomWithNavigate(props) {
@@ -273,30 +297,39 @@ export default function RoomWithNavigate(props) {
 
 // TODO : 채팅창 디자인 / 채팅창 구현
 // socket 연결을 redux에 저장말고 여기서 하게끔 수정할 것
+// 방 입장 => 방장이면 생성하자마자 입장,
+// 방장이 아닌 사람이면 입장시, 자신의 정보를 상대방에게 보내고, 이를 받은 상대방이 마찬가지로 정보를 보내오는 것으로 업데이트
+
 
 /*
         {
-            type: 1,
-            message: "opponent test"
-        },
-        {
-            type: 1,
+            type: 0,
+            sender: 1,
             message: "opponent test"
         },
         {
             type: 0,
+            sender: 1,
+            message: "opponent test"
+        },
+        {
+            type: 0,
+            sender: 0,
             message: "my chat test"
         },
         {
-            type: 1,
+            type: 0,
+            sender: 1,
             message: "long message test long message test long message test long message test long message test"
         },
         {
             type: 0,
+            sender: 0,
             message: "my chat test"
         },
         {
             type: 0,
+            sender: 0,
             message: "my chat test"
         },
     채팅 테스트 데이터
