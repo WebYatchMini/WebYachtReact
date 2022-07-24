@@ -6,7 +6,8 @@ const initStates = {
     mmr: 0,
     win: 0,
     lose: 0,
-    login: false
+    login: false,
+    isRoomOwner: false
 }
 
 const reducers = (state = initStates, action) => {
@@ -51,6 +52,18 @@ const reducers = (state = initStates, action) => {
             return {
                 ...state,
                 login: false
+            }
+        }
+        case userAction.SET_ROOM_OWNER_ON: {
+            return {
+                ...state,
+                isRoomOwner: true
+            }
+        }
+        case userAction.SET_ROOM_OWNER_OFF: {
+            return {
+                ...state,
+                isRoomOwner: false
             }
         }
         case userAction.INCREASE_WIN: {

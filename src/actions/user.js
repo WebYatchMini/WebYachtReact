@@ -7,6 +7,9 @@ export const SET_LOSE = 'user/SET_LOSE';
 export const SET_LOGIN_TRUE = 'user/SET_LOGIN_TRUE'
 export const SET_LOGIN_FALSE = 'user/SET_LOGIN_FALSE'
 
+export const SET_ROOM_OWNER_ON = 'user/SET_ROOM_OWNER_ON'
+export const SET_ROOM_OWNER_OFF = 'user/SET_ROOM_OWNER_OFF'
+
 export const INCREASE_WIN = 'user/UP_WIN';
 export const INCREASE_LOSE = 'user/UP_LOSE';
 
@@ -57,6 +60,18 @@ export const setLoginTrue = () => {
 export const setLoginFalse = () => {
   return {
     type: SET_LOGIN_FALSE
+  }
+}
+
+export const setRoomOwnerOn = () => {
+  return {
+    type: SET_ROOM_OWNER_ON
+  }
+}
+
+export const setRoomOwnerOff = () => {
+  return {
+    type: SET_ROOM_OWNER_OFF
   }
 }
 
