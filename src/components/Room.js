@@ -122,9 +122,10 @@ class Room extends Component {
         this.client.current.activate();
     }
     chatSubscribe = () => {
-        this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (body) => {
-            body = JSON.parse(body);
-            this.appendChatList(body)
+        this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (data) => {
+            data = JSON.parse(data.body);
+            console.log(data);
+            this.appendChatList(data);
         });
     }
     chatPublish = (m) => {
