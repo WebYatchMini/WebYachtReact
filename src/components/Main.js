@@ -143,11 +143,10 @@ class Main extends Component {
                 roomPwd : (this.state.CreatePwCheck ? this.state.CreateRoomPw : null)
             })
         }
-        fetch('/api/room/make', requstOption)
-        .then(res => res.json())
-        .then(data => {
-            if (data.roomCode != null) {
-                this.props.setRoomCodeStore(data.roomCode);
+        fetch('api/room/make', requstOption)
+        .then(res => {
+            if (res !== null) {
+                this.props.setRoomCodeStore(res);
                 this.props.setRoomTitleStore(this.state.CreateRoomTitle);
                 this.props.setRoomOwnerOnStore();
                 this.props.navigate('/room')
