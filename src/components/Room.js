@@ -77,41 +77,12 @@ class Room extends Component {
         ExitmodalShow: false,
         TestModalShow: false,
         game: false,
-        chatList: [{
-            type: 0,
-            sender: 1,
-            message: "opponent test"
-        },
-        {
-            type: 0,
-            sender: 1,
-            message: "opponent test"
-        },
-        {
-            type: 0,
-            sender: 0,
-            message: "my chat test"
-        },
-        {
-            type: 0,
-            sender: 1,
-            message: "long message test long message test long message test long message test long message test"
-        },
-        {
-            type: 0,
-            sender: 0,
-            message: "my chat test"
-        },
-        {
-            type: 0,
-            sender: 0,
-            message: "my chat test"
-        },],
+        chatList: [],
         opponentInfo: {
             nickname: '-',
             win: '-',
             lose: '-'
-        },
+        }
     }
     client = createRef();
 

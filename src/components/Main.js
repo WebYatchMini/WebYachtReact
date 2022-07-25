@@ -149,7 +149,7 @@ class Main extends Component {
             if (data.roomCode != null) {
                 this.props.setRoomCodeStore(data.roomCode);
                 this.props.setRoomTitleStore(this.state.CreateRoomTitle);
-                this.props.setRoomOwnerOn();
+                this.props.setRoomOwnerOnStore();
                 this.props.navigate('/room')
             }
         })
@@ -184,7 +184,7 @@ class Main extends Component {
                     if (res) {
                     this.props.setRoomCodeStore(roomCode);
                     this.props.setRoomTitleStore(roomTitle);
-                    this.props.setRoomOwnerOff();
+                    this.props.setRoomOwnerOffStore();
                     this.props.navigate('/room');
                     }
                 })
@@ -208,7 +208,7 @@ class Main extends Component {
             if (res) {
             this.props.setRoomCodeStore(roomCode);
             this.props.setRoomTitleStore(roomTitle);
-            this.props.setRoomOwnerOff();
+            this.props.setRoomOwnerOffStore();
             this.props.navigate('/room');
             }
         })
