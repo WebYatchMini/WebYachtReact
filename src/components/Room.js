@@ -1,4 +1,4 @@
-import { Component, createRef } from 'react'
+import { Component, useState, useRef, useEffect } from 'react'
 import { connect } from 'react-redux';
 import { Navigate, useNavigate, Route, Routes } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal'
@@ -71,35 +71,30 @@ function GameArea(props) {
         </div>
     );
 }
+function Room(props) {
+    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeIsRoomOwner, setRoomOwnerOffStore } = props;
+    const [ExitModalShow, setExitModalShow] = useState(false);
+    const [TestModalShow, setTestModalShow] = useState(false);
+    const [game, setGame] = useState(false);
+    const [chatList, setChatList] = useState([]);
+    const [opponentInfo, setOpponentInfo] = useState({
+        nickname: '-',
+        win: '-',
+        lose: '-'
+    })
 
-class Room extends Component {
-    state = {
-        ExitmodalShow: false,
-        TestModalShow: false,
-        game: false,
-        chatList: [],
-        opponentInfo: {
-            nickname: '-',
-            win: '-',
-            lose: '-'
-        }
-    }
+    const client = useRef({});
+    useEffect(() => {
+        chatConnect();
+    
+        return () => chatDisconnect();
+      }, []);
 
-    componentDidMount() {
-        this.chatConnect();
-        return () => this.chatDisconnect();
+    const chatDisconnect = () => {
+        client.current.deactivate();
     }
-    componentDidUpdate() {
-        this.chatConnect();
-        return () => this.chatDisconnect();
-    }
-    client = createRef();
-
-    chatDisconnect = () => {
-        this.client.current.deactivate();
-    }
-    chatConnect = () => {
-        this.client.current = new StompJs.Client({
+    const chatConnect = () => {
+        client.current = new StompJs.Client({
             // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
             webSocketFactory: () => new SockJS("stomp/chat"),    // proxy를 통한 접속
             connectHeaders: {
@@ -111,133 +106,122 @@ class Room extends Component {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             onConnect: () => {
-                this.chatSubscribe();
+                chatSubscribe();
                 // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
             },
             onStompError: (frame) => {
                 console.log(frame);
             }
         });
-        this.client.current.activate();
-    }
-    chatSubscribe = () => {
+        client.current.activate();
+    };
+    const chatSubscribe = () => {
         this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
-            this.appendChatList(data);
+            appendChatList(data);
         });
-    }
-    chatPublish = (m) => {
-        if (!this.client.current.connected) {
+    };
+    const chatPublish = (msg) => {
+        if (!client.current.connected) {
             console.log("소켓 연결 X")
             return;
         }
 
-        this.client.current.publish({
+        client.current.publish({
             destination: "/pub/chat/message",
             body: JSON.stringify({
-                roomCode: this.props.storeRoomCode,
-                sender: this.props.storeIsRoomOwner,
-                message: m
+                roomCode: props.storeRoomCode,
+                sender: props.storeIsRoomOwner,
+                message: msg
             })
         })
     }
 
-    handleChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value,
-        })
-    };
-
-    handleExit = () => {
-        this.chatDisconnect();
-        this.props.navigate('/main');
+    const handleExit = () => {
+        chatDisconnect();
+        props.navigate('/main');
     }
 
-
-    pressEnter = (e) => {
+    const pressEnter = (e) => {
         if (e.key === 'Enter' && e.target.value.length !== 0) {
-            this.sendMessage(e.target.value);
+            sendMessage(e.target.value);
             e.target.value = '';
         }
     }
-    sendMessage = (message) => {
-        this.chatPublish(message);
-    }
-    appendChatList = (data) => {
-        // 초기에 오는 sender는 방장(1)이 보낸건지, 입장한 사람(0)이 보낸건지를 의미.
-        const chat = {
-            sender: data.sender === this.props.storeIsRoomOwner ? 0 : 1,
-            message: data.message
-        }
-        this.setState({
-            chatList : [...this.state.chatList, chat]
-        }, () => {
-            let chatList = document.getElementById("chatList")
-            chatList.scrollTop = chatList.scrollHeight;
-        })
+
+    const sendMessage = (message) => {
+        chatPublish(message)
     }
 
-    handleExitRoom = () => {
-        this.setState({
-            ExitmodalShow: true
-        })
+    const appendChatList = (data) => {
+        const chat = {
+            sender: data.sender === props.storeIsRoomOwner ? 0 : 1,
+            message: data.message
+        }
+        setChatList((prev) => [...prev, chat], )
     }
-    handleGameArea = () => {
-        this.props.navigate('/room/game')
+    useEffect(() => {
+        let chatList = document.getElementById("chatList");
+        chatList.scrollTop = chatList.scrollHeight;
+    }, [chatList])
+
+    const handleExitRoom = () => {
+        setExitModalShow(true)
     }
-    render() {
-        const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeIsRoomOwner, setRoomOwnerOffStore } = this.props;
-        let chatList = Array.from(this.state.chatList).map((chat) => (
-            <div className={chat.sender === 0 ? "chatBox mine" : "chatBox opponent"}>
-                <div className={chat.sender === 0 ? "chat mine" : "chat opponent"}>{chat.message}</div>
+    const handleGameArea = () => {
+        props.navigate('/room/game');
+    }
+
+    const chattingList = Array.from(chatList).map((chat) => (
+        <div className={chat.sender === 0 ? "chatBox mine" : "chatBox opponent"}>
+            <div className={chat.sender === 0 ? "chat mine" : "chat opponent"}>{chat.message}</div>
+        </div>
+        //0 -> 내가 보낸 메세지 / 1 -> 상대가 보낸 메세지
+    ));
+
+    return(
+        <div className='common'>
+            {(() => {
+                if (!storeLogin) return <Navigate to='/login' replace={true}/>
+            })()}
+            <ExitModal 
+            show={ExitModalShow}
+            onHide={() => {
+                setExitModalShow(false);
+            }}
+            handleExit={handleExit}
+            />
+            <div className='container-fluid' id='roomContainer'>
+                {/* 방장이 게임 시작 -> 게임 모드로 들어가야 하는데 어떻게 해야할지 모르겠음 */}
+                {/* 일단 하나 확실한건 Route로는 아무래도 좋은 방법은 아닌거 같음.*/}
+                {/* Route 말고 이전에 했던 SPA 방식중에서 탭으로 이동해서 보이게 하는 방식이 적절해보임*/}
+                <Routes>
+                    <Route exact path='/' 
+                    element={<ReadyArea
+                        storeNickname={storeNickname}
+                        storeWin={storeWin}
+                        storeLose={storeLose}
+                        storeRoomTitle={storeRoomTitle}
+                        storeIsRoomOwner={storeIsRoomOwner}
+                        setRoomOwnerOffStore={setRoomOwnerOffStore}
+                        opponentInfo={opponentInfo}
+                        handleExitRoom={handleExitRoom}
+                        handleGameArea={handleGameArea}
+                        />}
+                    />
+                    <Route path='/game'
+                    element={<GameArea/>}
+                    />
+                </Routes>
+                <div className='test' id='chat'>
+                    <div id='chatList'>{chattingList}</div>
+                    <div id='chatForm'>
+                        <input className='form-control' name='chatMessage' onKeyPress={pressEnter}></input>
+                    </div>
+                </div>    
             </div>
-            //0 -> 내가 보낸 메세지 / 1 -> 상대가 보낸 메세지
-        ));
-        return(
-            <div className='common'>
-                {(() => {
-                    if (!storeLogin) return <Navigate to='/login' replace={true}/>
-                })()}
-                <ExitModal 
-                show={this.state.ExitmodalShow}
-                onHide={() => {
-                    this.setState({
-                        ExitmodalShow: false,
-                    })
-                }}
-                handleExit={this.handleExit}
-                />
-                <div className='container-fluid' id='roomContainer'>
-                    {/* 방장이 게임 시작 -> 게임 모드로 들어가야 하는데 어떻게 해야할지 모르겠음 */}
-                    {/* 일단 하나 확실한건 Route로는 아무래도 좋은 방법은 아닌거 같음.*/}
-                    {/* Route 말고 이전에 했던 SPA 방식중에서 탭으로 이동해서 보이게 하는 방식이 적절해보임*/}
-                    <Routes>
-                        <Route exact path='/' 
-                        element={<ReadyArea
-                            storeNickname={storeNickname}
-                            storeWin={storeWin}
-                            storeLose={storeLose}
-                            storeRoomTitle={storeRoomTitle}
-                            storeIsRoomOwner={storeIsRoomOwner}
-                            opponentInfo={this.state.opponentInfo}
-                            handleExitRoom={this.handleExitRoom}
-                            handleGameArea={this.handleGameArea}
-                            />}
-                        />
-                        <Route path='/game'
-                        element={<GameArea/>}
-                        />
-                    </Routes>
-                    <div className='test' id='chat'>
-                        <div id='chatList'>{chatList}</div>
-                        <div id='chatForm'>
-                            <input className='form-control' name='chatMessage' onKeyPress={this.pressEnter}></input>
-                        </div>
-                    </div>    
-                </div>
-            </div>
-        )
-    }
+        </div>
+    )
 }
 
 const mapStateToProps = (state) => ({
@@ -247,9 +231,9 @@ const mapStateToProps = (state) => ({
     storeWin: state.user.win,
     storeLose: state.user.lose,
     storeLogin: state.user.login,
+    storeIsRoomOwner: state.user.isRoomOwner,
     storeRoomCode: state.room.roomCode,
     storeRoomTitle: state.room.roomTitle,
-    storeIsRoomOwner: state.user.isRoomOwner
 })
 
 const mapDispatchToProps = (dispatch) => ({
