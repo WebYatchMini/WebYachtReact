@@ -132,6 +132,14 @@ class Room extends Component {
             heartbeatOutgoing: 4000,
             onConnect: () => {
                 this.chatSubscribe();
+                this.client.current.publish({
+                    destination: "pub/chat/enter",
+                    body: JSON.stringify({
+                        roomCode: this.props.storeRoomCode,
+                        sender: this.props.storeNickname,
+                        message: null
+                    })
+                })
                 // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
                 // 방 입장시 보내는 정보이므로, type: 1로 해서 보낼 것.
             },
