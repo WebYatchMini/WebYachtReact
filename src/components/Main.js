@@ -144,12 +144,17 @@ class Main extends Component {
             })
         }
         fetch('api/room/make', requstOption)
-        .then(res => {
-            if (res !== null) {
-                this.props.setRoomCodeStore(res);
+        .then(res => res.json())
+        .then(data => {
+            if (data.result) {
+                this.props.setRoomCodeStore(data.roomCode);
                 this.props.setRoomTitleStore(this.state.CreateRoomTitle);
                 this.props.setRoomOwnerOnStore();
                 this.props.navigate('/room')
+            }
+            else {
+                console.log("방생성 실패")
+                // 추후 메세지 창 띄울 것
             }
         })
     }
@@ -179,12 +184,17 @@ class Main extends Component {
                     })
                 }
                 fetch('api/room/join', requstOption)
-                .then(res => {
-                    if (res) {
+                .then(res => res.json())
+                .then(data => {
+                    if (data.result) {
                     this.props.setRoomCodeStore(roomCode);
                     this.props.setRoomTitleStore(roomTitle);
                     this.props.setRoomOwnerOffStore();
                     this.props.navigate('/room');
+                    }
+                    else {
+                        console.log("방 입장 실패")
+                        // 추후 메세지 창 띄울 것
                     }
                 })
             }
@@ -203,16 +213,19 @@ class Main extends Component {
             })
         }
         fetch('api/room/join', requstOption)
-        .then(res => {
-            if (res) {
-            this.props.setRoomCodeStore(roomCode);
-            this.props.setRoomTitleStore(roomTitle);
-            this.props.setRoomOwnerOffStore();
-            this.props.navigate('/room');
-            }
-        })
-        // 성공시 페이지 이동하게끔 코드 작성하기
-        // 실패시 참가 실패 메세지
+        .then(res => res.json())
+                .then(data => {
+                    if (data.result) {
+                    this.props.setRoomCodeStore(roomCode);
+                    this.props.setRoomTitleStore(roomTitle);
+                    this.props.setRoomOwnerOffStore();
+                    this.props.navigate('/room');
+                    }
+                    else {
+                        console.log("방 입장 실패")
+                        // 추후 메세지 창 띄울 것
+                    }
+                })
     }
     
     handleLogout = () => {
