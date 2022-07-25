@@ -175,6 +175,7 @@ class Room extends Component {
         }, () => {
             let chatList = document.getElementById("chatList")
             chatList.scrollTop = chatList.scrollHeight;
+            console.log(this.state.chatList);
         })
     }
 
