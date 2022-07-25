@@ -10,8 +10,6 @@ import * as userAction from "../actions/user"
 import * as StompJs from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
 
-const socket = new SockJS("stomp/chat")
-
 function ExitModal(props) {
     return (
         <Modal 
@@ -43,7 +41,7 @@ function ReadyArea(props) {
             </div>
             <div className='test' id='user-1'>
                 <div className='userInfo'>
-                    <div className='HostMark'>{props.storeIsRoomOwner ? <i class="bi bi-star-fill"></i> : ""}</div>
+                    <div className='HostMark'>{props.storeIsRoomOwner === 1 ? <i class="bi bi-star-fill"></i> : ""}</div>
                     <div>{props.storeNickname}</div>
                     <div>{props.storeWin}</div>
                     <div>{props.storeLose}</div>
@@ -51,7 +49,7 @@ function ReadyArea(props) {
             </div>
             <div className='test' id='user-2'>
                 <div className='userInfo'>
-                    <div className='HostMark'>{!props.storeIsRoomOwner ? <i class="bi bi-star-fill"></i> : ""}</div>
+                    <div className='HostMark'>{props.storeIsRoomOwner === 0 ? <i class="bi bi-star-fill"></i> : ""}</div>
                     <div>{props.opponentInfo.nickname}</div>
                     <div>{props.opponentInfo.win}</div>
                     <div>{props.opponentInfo.lose}</div>
@@ -138,10 +136,10 @@ class Room extends Component {
             destination: "/pub/chat/message",
             body: JSON.stringify({
                 roomCode: this.props.storeRoomCode,
-                sender: 0,
+                sender: this.props.storeIsRoomOwner,
                 message: m
             })
-        }) // 상대방이 내 데이터를 받게 되므로 sender를 1로 지정
+        })
     }
 
     handleChange = (e) => {
@@ -151,6 +149,7 @@ class Room extends Component {
     };
 
     handleExit = () => {
+        this.chatDisconnect();
         this.props.navigate('/main');
     }
 
@@ -163,13 +162,13 @@ class Room extends Component {
     }
     sendMessage = (message) => {
         this.chatPublish(message);
-        const chat = {
-            sender: 0,
-            message: message
-        } // 내 채팅 데이터 이므로 sender를 0으로 지정
-        this.appendChatList(chat);
     }
-    appendChatList = (chat) => {
+    appendChatList = (data) => {
+        // 초기에 오는 sender는 방장(1)이 보낸건지, 입장한 사람(0)이 보낸건지를 의미.
+        const chat = {
+            sender: data.sender === this.props.storeIsRoomOwner ? 0 : 1,
+            message: data.message
+        }
         this.setState({
             chatList : [...this.state.chatList, chat]
         }, () => {
@@ -192,6 +191,7 @@ class Room extends Component {
             <div className={chat.sender === 0 ? "chatBox mine" : "chatBox opponent"}>
                 <div className={chat.sender === 0 ? "chat mine" : "chat opponent"}>{chat.message}</div>
             </div>
+            //0 -> 내가 보낸 메세지 / 1 -> 상대가 보낸 메세지
         ));
         return(
             <div className='common'>
