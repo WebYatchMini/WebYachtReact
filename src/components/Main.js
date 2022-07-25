@@ -103,28 +103,7 @@ class Main extends Component {
         selectedRoomIdx: -1,
         nonSelectedModalShow: false,
         JoinRoomPwd: '',
-        roomArray: [ {
-            roomCode: "123456",
-            title: "test1",
-            organizerName: "test1",
-            curPlayerCount: 1,
-            locked: true,
-            started: false,
-        }, {
-            roomCode: "234567",
-            title: "test2",
-            organizerName: "test2",
-            curPlayerCount: 1,
-            locked: true,
-            started: false,
-        }, {
-            roomCode: "234567",
-            title: "test3",
-            organizerName: "test3",
-            curPlayerCount: 1,
-            locked: false,
-            started: false,
-        }]
+        roomArray: []
     }
 
     constructor(props) {
@@ -166,14 +145,16 @@ class Main extends Component {
         }
         fetch('/api/room/make', requstOption)
         .then(res => res.json())
-
-        // this.props.setRoomCodeStore(roomCode);
-        // => 성공시 받은 roomCode를 저장.
-        this.props.setRoomTitleStore(this.state.CreateRoomTitle);
-        this.props.setRoomOwnerOn();
-        this.props.navigate('/room')
-        // 성공시, 페이지 이동하게끔 코드 작성하기
+        .then(data => {
+            if (data.roomCode != null) {
+                this.props.setRoomCodeStore(data.roomCode);
+                this.props.setRoomTitleStore(this.state.CreateRoomTitle);
+                this.props.setRoomOwnerOn();
+                this.props.navigate('/room')
+            }
+        })
     }
+    
     handleJoin = () => {
         const idx = this.state.selectedRoomIdx;
         if (idx === -1) {
@@ -190,26 +171,23 @@ class Main extends Component {
             else {
                 const roomCode = this.state.roomArray[idx].roomCode;
                 const roomTitle = this.state.roomArray[idx].title;
-                // const requstOption = {
-                //     method : 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body : JSON.stringify({
-                //         roomCode : roomCode,
-                //         roomPwd : null
-                //     })
-                // }
-                // fetch('api/room/join', requstOption)
-                // .then(res => res.json())
-                // .then(data => (data) => {
-                //     console.log(data);
-                //     this.props.navigate('/room');
-                // })
-                // 성공시 페이지 이동하게끔 코드 작성하기 -> 방에 이동하고 나서 소켓연결
-                // + 방 정보 리덕스에 저장해주기
-                // 실패시 참가 실패 메세지
-                this.props.setRoomCodeStore(roomCode);
-                this.props.setRoomTitleStore(roomTitle);
-                this.props.navigate('/room');
+                const requstOption = {
+                    method : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body : JSON.stringify({
+                        roomCode : roomCode,
+                        roomPwd : null
+                    })
+                }
+                fetch('api/room/join', requstOption)
+                .then(res => {
+                    if (res) {
+                    this.props.setRoomCodeStore(roomCode);
+                    this.props.setRoomTitleStore(roomTitle);
+                    this.props.setRoomOwnerOff();
+                    this.props.navigate('/room');
+                    }
+                })
             }
         }
     }
@@ -226,13 +204,14 @@ class Main extends Component {
             })
         }
         fetch('api/room/join', requstOption)
-        .then(res => res.json())
-        .then(data => (data) => {
-            console.log(data);
+        .then(res => {
+            if (res) {
             this.props.setRoomCodeStore(roomCode);
             this.props.setRoomTitleStore(roomTitle);
+            this.props.setRoomOwnerOff();
             this.props.navigate('/room');
-        })  
+            }
+        })
         // 성공시 페이지 이동하게끔 코드 작성하기
         // 실패시 참가 실패 메세지
     }
