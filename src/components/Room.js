@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { Component, createRef } from 'react'
 import { connect } from 'react-redux';
 import { Navigate, useNavigate, Route, Routes } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal'
@@ -10,9 +10,7 @@ import * as userAction from "../actions/user"
 import * as StompJs from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
 
-const socket = new SockJS("stomp/chat");
-const client = StompJs.Stomp.over(socket);
-client.activate()
+const socket = new SockJS("stomp/chat")
 
 function ExitModal(props) {
     return (
@@ -89,35 +87,55 @@ class Room extends Component {
         }
     }
 
-    componentDidMount = () => {
-        client.connect({}, () => {
-            this.chatSubscribe()
-        });
+    componentDidMount() {
+        this.chatConnect();
+        return () => this.chatDisconnect();
     }
-    componentDidUpdate = () => {
-        client.connect({}, () => {
-            this.chatSubscribe()
-        });
+    componentDidUpdate() {
+        this.chatConnect();
+        return () => this.chatDisconnect();
     }
+    client = createRef();
 
     chatDisconnect = () => {
-        client.deactivate();
+        this.client.current.deactivate();
+    }
+    chatConnect = () => {
+        this.client.current = new StompJs.Client({
+            // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+            webSocketFactory: () => new SockJS("stomp/chat"),    // proxy를 통한 접속
+            connectHeaders: {
+            },
+            debug: (str) => {
+                console.log(str);
+            },
+            reconnectDelay: 5000, //자동 재 연결
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+            onConnect: () => {
+                this.chatSubscribe();
+                // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
+            },
+            onStompError: (frame) => {
+                console.log(frame);
+            }
+        });
+        this.client.current.activate();
     }
     chatSubscribe = () => {
-        client.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (data) => {
+        this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
-            console.log(data)
-            this.appendChatList(data)
+            this.appendChatList(data);
         });
     }
     chatPublish = (m) => {
-        if (!client.connected) {
+        if (!this.client.current.connected) {
             console.log("소켓 연결 X")
             return;
         }
 
-        client.publish({
-            destination: "pub/chat/message",
+        this.client.current.publish({
+            destination: "/pub/chat/message",
             body: JSON.stringify({
                 roomCode: this.props.storeRoomCode,
                 sender: 0,
@@ -157,7 +175,6 @@ class Room extends Component {
         }, () => {
             let chatList = document.getElementById("chatList")
             chatList.scrollTop = chatList.scrollHeight;
-            console.log(this.state.chatList);
         })
     }
 
