@@ -7,7 +7,7 @@ const initStates = {
     win: 0,
     lose: 0,
     login: false,
-    isRoomOwner: false
+    isRoomOwner: 0
 }
 
 const reducers = (state = initStates, action) => {
@@ -57,13 +57,13 @@ const reducers = (state = initStates, action) => {
         case userAction.SET_ROOM_OWNER_ON: {
             return {
                 ...state,
-                isRoomOwner: true
+                isRoomOwner: 1
             }
         }
         case userAction.SET_ROOM_OWNER_OFF: {
             return {
                 ...state,
-                isRoomOwner: false
+                isRoomOwner: 0
             }
         }
         case userAction.INCREASE_WIN: {
