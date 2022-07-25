@@ -103,14 +103,6 @@ class Room extends Component {
             heartbeatOutgoing: 4000,
             onConnect: () => {
                 this.chatSubscribe();
-                this.client.current.publish({
-                    destination: "pub/chat/enter",
-                    body: JSON.stringify({
-                        roomCode: this.props.storeRoomCode,
-                        sender: this.props.storeNickname,
-                        message: null
-                    })
-                })
                 // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
                 // 방 입장시 보내는 정보이므로, type: 1로 해서 보낼 것.
             },
@@ -122,22 +114,7 @@ class Room extends Component {
     chatSubscribe = () => {
         this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (body) => {
             body = JSON.parse(body);
-            const m = JSON.parse(body.message);
-            switch(m.type) {
-                case 0:
-                    // 채팅 데이터
-                    this.appendChatList(m)
-                    break;
-                case 1:
-                    // 상대방이 방 입장시 보내온 상대방의 정보 => 이 경우는 받고 내 정보를 보내주어야함
-                    // 이때 보내는 정보는 type: 2로 해서 보낼 것.
-                    break;
-                case 2:
-                    // 내가 입장했을 때, 방장이 보낸 방장의 정보 => 이 경우는 내 정보를 보낼 필요는 없음
-                    break;
-                default:
-                    break;
-            }
+            this.appendChatList(body)
         });
     }
     chatPublish = (m) => {
@@ -150,12 +127,8 @@ class Room extends Component {
             destination: "pub/chat/message",
             body: JSON.stringify({
                 roomCode: this.props.storeRoomCode,
-                sender: this.props.storeNickname,
-                message: JSON.stringify({
-                    type: 0,
-                    sender: 1,
-                    message: m
-                })
+                sender: 0,
+                message: m
             })
         }) // 상대방이 내 데이터를 받게 되므로 sender를 1로 지정
     }
@@ -180,7 +153,6 @@ class Room extends Component {
     sendMessage = (message) => {
         this.chatPublish(message);
         const chat = {
-            type: 0,
             sender: 0,
             message: message
         } // 내 채팅 데이터 이므로 sender를 0으로 지정
@@ -288,32 +260,26 @@ export default function RoomWithNavigate(props) {
 
 /*
         {
-            type: 0,
             sender: 1,
             message: "opponent test"
         },
         {
-            type: 0,
             sender: 1,
             message: "opponent test"
         },
         {
-            type: 0,
             sender: 0,
             message: "my chat test"
         },
         {
-            type: 0,
             sender: 1,
             message: "long message test long message test long message test long message test long message test"
         },
         {
-            type: 0,
             sender: 0,
             message: "my chat test"
         },
         {
-            type: 0,
             sender: 0,
             message: "my chat test"
         },
