@@ -118,10 +118,10 @@ class Room extends Component {
         });
     }
     chatPublish = (m) => {
-        if (!this.client.current.connected) {
-            console.log("소켓 연결 X")
-            return;
-        }
+        // if (!this.client.current.connected) {
+        //     console.log("소켓 연결 X")
+        //     return;
+        // }
 
         this.client.current.publish({
             destination: "pub/chat/message",
