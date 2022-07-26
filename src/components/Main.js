@@ -127,12 +127,12 @@ class Main extends Component {
         nonSelectedModalShow: false,
         JoinRoomPwd: '',
         joinFailModalShow: false,
-        roomArray: []
+        roomArray: [],
     }
-
+    
     componentDidMount() {
         this.handleRefresh();
-        setTimeout(this.handleRefresh(), 10000);
+        setTimeout(this.handleRefresh, 10000);
     }
     handlePwCheck = () => {
         this.setState({
