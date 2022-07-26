@@ -94,6 +94,29 @@ function JoinPwdModal(props) {
     );
 }
 
+function JoinFailModal(props) {
+    return (
+        <Modal
+        {...props}
+        size='lg'
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        >
+            <Modal.Header>
+                <h4>JOIN FAILED</h4>
+            </Modal.Header>
+            <Modal.Body>
+                <div>
+                    방 참가에 실패했습니다!
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button className='btn btn-danger' onClick={props.onHide}>BACK</Button>
+            </Modal.Footer>
+        </Modal>
+    )
+}
+
 class Main extends Component {
     state = {
         CreateRoomTitle: '',
@@ -103,18 +126,14 @@ class Main extends Component {
         selectedRoomIdx: -1,
         nonSelectedModalShow: false,
         JoinRoomPwd: '',
+        joinFailModalShow: false,
         roomArray: []
     }
 
-    constructor(props) {
-        super(props);
-        fetch('api/room/refresh')
-        .then(res => res.json())
-        .then(data => {
-            this.state.roomArray = data;
-        })
+    componentDidMount() {
+        this.handleRefresh();
+        setTimeout(this.handleRefresh(), 10000);
     }
-
     handlePwCheck = () => {
         this.setState({
             CreatePwCheck: !this.state.CreatePwCheck,
@@ -155,7 +174,6 @@ class Main extends Component {
             }
             else {
                 console.log("방생성 실패")
-                // 추후 메세지 창 띄울 것
             }
         })
     }
@@ -196,7 +214,9 @@ class Main extends Component {
                     }
                     else {
                         console.log("방 입장 실패")
-                        // 추후 메세지 창 띄울 것
+                        this.setState({
+                            joinFailModalShow: true
+                        })
                     }
                 })
             }
@@ -226,7 +246,10 @@ class Main extends Component {
             }
             else {
                 console.log("방 입장 실패")
-                // 추후 메세지 창 띄울 것
+                this.setState({
+                    joinFailModalShow: true,
+                    joinPwdModalShow: false
+                })
             }
         })
     }
@@ -293,6 +316,14 @@ class Main extends Component {
                 }}
                 handleChange={this.handleChange}
                 handleJoinPwd={this.handleJoinPwd}
+                />
+                <JoinFailModal
+                show={this.state.joinFailModalShow}
+                onHide={() => {
+                    this.setState({
+                        joinFailModalShow: false,
+                    })
+                }}
                 />
                 <div className='container-fluid' id='lobbyContainer'>
                     <div className='test' id='lobby'>

@@ -299,7 +299,6 @@ export default function RoomWithNavigate(props) {
 // 방 입장 => 방장이면 생성하자마자 입장,
 // 방장이 아닌 사람이면 입장시, 자신의 정보를 상대방에게 보내고, 이를 받은 상대방이 마찬가지로 정보를 보내오는 것으로 업데이트
 
-
 /*
         {
             sender: 1,
