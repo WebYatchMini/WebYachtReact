@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button'
 import './Room.css'
 
 import * as userAction from "../actions/user"
+import * as roomAction from "../actions/room"
 
 import * as StompJs from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
@@ -34,6 +35,33 @@ function ExitModal(props) {
     );
 }
 function ReadyArea(props) {
+    const [opponentInfo, setOpponentInfo] = useState({
+        nickname: '-',
+        win: '-',
+        lose: '-'
+    })
+    const client = props.client;
+    useEffect(() => {
+        gameSubscribe();
+
+        return () => gameDisconnect();
+    }, [])  
+    const gameDisconnect = () => {
+        client.deactivate();
+    }
+    const gameSubscribe = () => {
+        client.subscribe(`/sub/game/room/${props.storeRoomCode}`, (data) => {
+            data = JSON.parse(data.body);
+            for (let user in data) {
+                if (user.uid !== props.storeUid) setOpponentInfo({
+                    nickname: user.nickname,
+                    win: user.win,
+                    lose: user.lose
+                });
+            }
+        })
+    }
+
     return (
         <div className='content' id='readyArea'>
             <div className='test' id='header'>
@@ -50,9 +78,9 @@ function ReadyArea(props) {
             <div className='test' id='user-2'>
                 <div className='userInfo'>
                     <div className='HostMark'>{props.storeIsRoomOwner === 0 ? <i class="bi bi-star-fill"></i> : ""}</div>
-                    <div>{props.opponentInfo.nickname}</div>
-                    <div>{props.opponentInfo.win}</div>
-                    <div>{props.opponentInfo.lose}</div>
+                    <div>{opponentInfo.nickname}</div>
+                    <div>{opponentInfo.win}</div>
+                    <div>{opponentInfo.lose}</div>
                 </div>
             </div>
             <div className='test' id='menu'>
@@ -71,17 +99,9 @@ function GameArea(props) {
         </div>
     );
 }
-function Room(props) {
-    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeIsRoomOwner, setRoomOwnerOffStore } = props;
-    const [ExitModalShow, setExitModalShow] = useState(false);
-    const [TestModalShow, setTestModalShow] = useState(false);
-    const [game, setGame] = useState(false);
+
+function ChatArea(props) {
     const [chatList, setChatList] = useState([]);
-    const [opponentInfo, setOpponentInfo] = useState({
-        nickname: '-',
-        win: '-',
-        lose: '-'
-    })
 
     const client = props.client;
     useEffect(() => {
@@ -93,28 +113,6 @@ function Room(props) {
     const chatDisconnect = () => {
         client.deactivate();
     }
-    // const chatConnect = () => {
-    //     client.current = new StompJs.Client({
-    //         // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-    //         webSocketFactory: () => new SockJS("stomp/chat"),    // proxy를 통한 접속
-    //         connectHeaders: {
-    //         },
-    //         debug: (str) => {
-    //             console.log(str);
-    //         },
-    //         reconnectDelay: 5000, //자동 재 연결
-    //         heartbeatIncoming: 4000,
-    //         heartbeatOutgoing: 4000,
-    //         onConnect: () => {
-    //             chatSubscribe();
-    //             // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
-    //         },
-    //         onStompError: (frame) => {
-    //             console.log(frame);
-    //         }
-    //     });
-    //     client.current.activate();
-    // };
     const chatSubscribe = () => {
         client.subscribe(`/sub/chat/room/${props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
@@ -135,11 +133,6 @@ function Room(props) {
                 message: msg
             })
         })
-    }
-
-    const handleExit = () => {
-        chatDisconnect();
-        props.navigate('/main');
     }
 
     const pressEnter = (e) => {
@@ -165,19 +158,51 @@ function Room(props) {
         chatList.scrollTop = chatList.scrollHeight;
     }, [chatList])
 
-    const handleExitRoom = () => {
-        setExitModalShow(true)
-    }
-    const handleGameArea = () => {
-        props.navigate('/room/game');
-    }
-
     const chattingList = Array.from(chatList).map((chat) => (
         <div className={chat.sender === 0 ? "chatBox mine" : "chatBox opponent"}>
             <div className={chat.sender === 0 ? "chat mine" : "chat opponent"}>{chat.message}</div>
         </div>
         //0 -> 내가 보낸 메세지 / 1 -> 상대가 보낸 메세지
     ));
+
+    return (
+        <div className='test' id='chat'>
+            <div id='chatList'>{chattingList}</div>
+            <div id='chatForm'>
+                <input className='form-control' name='chatMessage' onKeyPress={pressEnter}></input>
+            </div>
+        </div>
+    )
+}
+
+function Room(props) {
+    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOffStore } = props;
+    const [ExitModalShow, setExitModalShow] = useState(false);
+    const [TestModalShow, setTestModalShow] = useState(false);
+    const [game, setGame] = useState(false);
+
+    const client = props.client;
+
+    const handleExit = () => {
+        const requstOption = {
+            method : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body : JSON.stringify({
+                uid: props.storeUid,
+                roomCode : props.roomCode,
+            })
+        }
+        fetch('/api/exit', requstOption)
+        props.roomResetStore();
+        props.navigate('/main');
+    }
+
+    const handleExitRoom = () => {
+        setExitModalShow(true)
+    }
+    const handleGameArea = () => {
+        props.navigate('/room/game');
+    }
 
     return(
         <div className='common'>
@@ -195,30 +220,24 @@ function Room(props) {
                 {/* 방장이 게임 시작 -> 게임 모드로 들어가야 하는데 어떻게 해야할지 모르겠음 */}
                 {/* 일단 하나 확실한건 Route로는 아무래도 좋은 방법은 아닌거 같음.*/}
                 {/* Route 말고 이전에 했던 SPA 방식중에서 탭으로 이동해서 보이게 하는 방식이 적절해보임*/}
-                <Routes>
-                    <Route exact path='/' 
-                    element={<ReadyArea
-                        storeNickname={storeNickname}
-                        storeWin={storeWin}
-                        storeLose={storeLose}
-                        storeRoomTitle={storeRoomTitle}
-                        storeIsRoomOwner={storeIsRoomOwner}
-                        setRoomOwnerOffStore={setRoomOwnerOffStore}
-                        opponentInfo={opponentInfo}
-                        handleExitRoom={handleExitRoom}
-                        handleGameArea={handleGameArea}
-                        />}
-                    />
-                    <Route path='/game'
-                    element={<GameArea/>}
-                    />
-                </Routes>
-                <div className='test' id='chat'>
-                    <div id='chatList'>{chattingList}</div>
-                    <div id='chatForm'>
-                        <input className='form-control' name='chatMessage' onKeyPress={pressEnter}></input>
-                    </div>
-                </div>    
+                <ReadyArea
+                storeUid={storeUid}
+                storeNickname={storeNickname}
+                storeWin={storeWin}
+                storeLose={storeLose}
+                storeRoomCode={storeRoomCode}
+                storeRoomTitle={storeRoomTitle}
+                storeIsRoomOwner={storeIsRoomOwner}
+                setRoomOwnerOffStore={setRoomOwnerOffStore}
+                handleExitRoom={handleExitRoom}
+                handleGameArea={handleGameArea}
+                client={client}
+                />
+                <ChatArea
+                client={client}
+                storeRoomCode={storeRoomCode}
+                storeIsRoomOwner={storeIsRoomOwner}
+                />    
             </div>
         </div>
     )
@@ -238,12 +257,13 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     resetStore: () => dispatch(userAction.reset()),
-    setRoomOwnerOffStore : () => dispatch(userAction.setRoomOwnerOff())
+    setRoomOwnerOffStore : () => dispatch(userAction.setRoomOwnerOff()),
+    roomResetStore: () => dispatch(roomAction.reset())
 })
 
 const client = new StompJs.Client({
     // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-    webSocketFactory: () => new SockJS("stomp/chat"),    // proxy를 통한 접속
+    webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
     connectHeaders: {
     },
     debug: (str) => {

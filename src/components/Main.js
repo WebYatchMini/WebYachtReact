@@ -139,6 +139,7 @@ class Main extends Component {
             method : 'POST',
             headers: { 'Content-Type': 'application/json' },
             body : JSON.stringify({
+                uid: this.props.storeUid,
                 title: this.state.CreateRoomTitle,
                 roomPwd : (this.state.CreatePwCheck ? this.state.CreateRoomPw : null)
             })
@@ -179,6 +180,7 @@ class Main extends Component {
                     method : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body : JSON.stringify({
+                        uid: this.props.storeUid,
                         roomCode : roomCode,
                         roomPwd : null
                     })
@@ -208,24 +210,25 @@ class Main extends Component {
             method : 'POST',
             headers: { 'Content-Type': 'application/json' },
             body : JSON.stringify({
+                uid: this.props.storeUid,
                 roomCode : roomCode,
                 roomPwd : this.state.JoinRoomPwd
             })
         }
         fetch('api/room/join', requstOption)
         .then(res => res.json())
-                .then(data => {
-                    if (data.result) {
-                    this.props.setRoomCodeStore(roomCode);
-                    this.props.setRoomTitleStore(roomTitle);
-                    this.props.setRoomOwnerOffStore();
-                    this.props.navigate('/room');
-                    }
-                    else {
-                        console.log("방 입장 실패")
-                        // 추후 메세지 창 띄울 것
-                    }
-                })
+        .then(data => {
+            if (data.result) {
+            this.props.setRoomCodeStore(roomCode);
+            this.props.setRoomTitleStore(roomTitle);
+            this.props.setRoomOwnerOffStore();
+            this.props.navigate('/room');
+            }
+            else {
+                console.log("방 입장 실패")
+                // 추후 메세지 창 띄울 것
+            }
+        })
     }
     
     handleLogout = () => {
