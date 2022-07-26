@@ -60,14 +60,26 @@ function ReadyArea(props) {
     const gameSubscribe = () => {
         client.subscribe(`/sub/game/room/${props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
-            Array.from(data).forEach((user) => {
-                if (user.uid !== props.storeUid) setOpponentInfo({
-                    nickname: user.nickname,
-                    win: user.win,
-                    lose: user.lose
+            let arr = Array.from(data);
+            if (arr.length === 2) {
+                arr.forEach((user) => {
+                    if (user.uid !== props.storeUid) setOpponentInfo({
+                        nickname: user.nickname,
+                        win: user.win,
+                        lose: user.lose
+                    })
                 })
-            })
+            }
+            else if (arr.length === 1) {
+                setOpponentInfo({
+                    nickname: '-',
+                    win: '-',
+                    lose: '-'
+                })
+                if (!props.storeIsRoomOwner) props.setRoomOwnerOn();
+            }
         })
+        // => 유저가 나갔을 때 방장 여부 수정 및 방에 있는 유저 수정
     }
 
     return (
@@ -184,7 +196,7 @@ function ChatArea(props) {
 }
 
 function Room(props) {
-    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOffStore } = props;
+    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore } = props;
     const [ExitModalShow, setExitModalShow] = useState(false);
     const [TestModalShow, setTestModalShow] = useState(false);
     const [game, setGame] = useState(false);
@@ -236,6 +248,7 @@ function Room(props) {
                 storeRoomCode={storeRoomCode}
                 storeRoomTitle={storeRoomTitle}
                 storeIsRoomOwner={storeIsRoomOwner}
+                setRoomOwnerOnStore={setRoomOwnerOnStore}
                 setRoomOwnerOffStore={setRoomOwnerOffStore}
                 handleExitRoom={handleExitRoom}
                 handleGameArea={handleGameArea}
@@ -265,6 +278,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     resetStore: () => dispatch(userAction.reset()),
+    setRoomOwnerOnStore : () => dispatch(userAction.setRoomOwnerOn()),
     setRoomOwnerOffStore : () => dispatch(userAction.setRoomOwnerOff()),
     roomResetStore: () => dispatch(roomAction.reset())
 })
