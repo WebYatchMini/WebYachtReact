@@ -200,7 +200,7 @@ function Room(props) {
                 roomCode : props.roomCode,
             })
         }
-        fetch('/api/exit', requstOption)
+        fetch('/api/room/exit', requstOption)
         props.roomResetStore();
         props.navigate('/main');
     }
@@ -209,7 +209,7 @@ function Room(props) {
         setExitModalShow(true)
     }
     const handleGameArea = () => {
-        props.navigate('/room/game');
+        
     }
 
     return(
