@@ -83,51 +83,51 @@ function Room(props) {
         lose: '-'
     })
 
-    const client = useRef({});
+    const client = props.client;
     useEffect(() => {
-        chatConnect();
+        chatSubscribe();
     
         return () => chatDisconnect();
     }, []);
 
     const chatDisconnect = () => {
-        client.current.deactivate();
+        client.deactivate();
     }
-    const chatConnect = () => {
-        client.current = new StompJs.Client({
-            // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-            webSocketFactory: () => new SockJS("stomp/chat"),    // proxy를 통한 접속
-            connectHeaders: {
-            },
-            debug: (str) => {
-                console.log(str);
-            },
-            reconnectDelay: 5000, //자동 재 연결
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000,
-            onConnect: () => {
-                chatSubscribe();
-                // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
-            },
-            onStompError: (frame) => {
-                console.log(frame);
-            }
-        });
-        client.current.activate();
-    };
+    // const chatConnect = () => {
+    //     client.current = new StompJs.Client({
+    //         // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+    //         webSocketFactory: () => new SockJS("stomp/chat"),    // proxy를 통한 접속
+    //         connectHeaders: {
+    //         },
+    //         debug: (str) => {
+    //             console.log(str);
+    //         },
+    //         reconnectDelay: 5000, //자동 재 연결
+    //         heartbeatIncoming: 4000,
+    //         heartbeatOutgoing: 4000,
+    //         onConnect: () => {
+    //             chatSubscribe();
+    //             // 같은 방에 있는 사용자들의 정보를 먼저 보내고 받기
+    //         },
+    //         onStompError: (frame) => {
+    //             console.log(frame);
+    //         }
+    //     });
+    //     client.current.activate();
+    // };
     const chatSubscribe = () => {
-        client.current.subscribe(`/sub/chat/room/${props.storeRoomCode}`, (data) => {
+        client.subscribe(`/sub/chat/room/${props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
             appendChatList(data);
         });
     };
     const chatPublish = (msg) => {
-        if (!client.current.connected) {
+        if (!client.connected) {
             console.log("소켓 연결 X")
             return;
         }
 
-        client.current.publish({
+        client.publish({
             destination: "/pub/chat/message",
             body: JSON.stringify({
                 roomCode: props.storeRoomCode,
@@ -241,10 +241,29 @@ const mapDispatchToProps = (dispatch) => ({
     setRoomOwnerOffStore : () => dispatch(userAction.setRoomOwnerOff())
 })
 
+const client = new StompJs.Client({
+    // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+    webSocketFactory: () => new SockJS("stomp/chat"),    // proxy를 통한 접속
+    connectHeaders: {
+    },
+    debug: (str) => {
+        console.log(str);
+    },
+    reconnectDelay: 5000, //자동 재 연결
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000,
+    onConnect: () => {
+    },
+    onStompError: (frame) => {
+        console.log(frame);
+    }
+});
+client.activate();
+
 export default function RoomWithNavigate(props) {
     const navigate = useNavigate();
     const MainClass = connect(mapStateToProps, mapDispatchToProps)(Room)
-    return <MainClass navigate={navigate}/>
+    return <MainClass client={client} navigate={navigate}/>
 }
 
 // TODO : 채팅창 디자인 / 채팅창 구현
