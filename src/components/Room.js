@@ -197,7 +197,7 @@ function Room(props) {
             headers: { 'Content-Type': 'application/json' },
             body : JSON.stringify({
                 uid: props.storeUid,
-                roomCode : props.roomCode,
+                roomCode : props.storeRoomCode,
             })
         }
         fetch('/api/room/exit', requstOption)
