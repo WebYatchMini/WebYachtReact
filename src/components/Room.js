@@ -43,6 +43,12 @@ function ReadyArea(props) {
     const client = props.client;
     useEffect(() => {
         gameSubscribe();
+        client.publish({
+            destination: "/pub/game/room/enter ",
+            body: JSON.stringify({
+                roomCode: props.storeRoomCode,
+            })
+        })
 
         return () => gameDisconnect();
     }, [])  
@@ -52,13 +58,13 @@ function ReadyArea(props) {
     const gameSubscribe = () => {
         client.subscribe(`/sub/game/room/${props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
-            for (let user in data) {
+            Array.from(data).forEach((user) => {
                 if (user.uid !== props.storeUid) setOpponentInfo({
                     nickname: user.nickname,
                     win: user.win,
                     lose: user.lose
-                });
-            }
+                })
+            })
         })
     }
 
@@ -151,7 +157,7 @@ function ChatArea(props) {
             sender: data.sender === props.storeIsRoomOwner ? 0 : 1,
             message: data.message
         }
-        setChatList((prev) => [...prev, chat], )
+        setChatList((prev) => [...prev, chat])
     }
     useEffect(() => {
         let chatList = document.getElementById("chatList");
