@@ -51,7 +51,7 @@ function ReadyArea(props) {
                 message: "enter"
             })
         })
-
+        // => tcp header 20byte, ip header 20byte 포함 패킷 길이 최소 64byte 이상을 충족해야서 더미데이터 더 포함해서 보냄
         return () => gameDisconnect();
     }, [])  
     const gameDisconnect = () => {
@@ -79,21 +79,21 @@ function ReadyArea(props) {
                 <div className='userInfo'>
                     <div className='HostMark'>{props.storeIsRoomOwner === 1 ? <i class="bi bi-star-fill"></i> : ""}</div>
                     <div>{props.storeNickname}</div>
-                    <div>{props.storeWin}</div>
-                    <div>{props.storeLose}</div>
+                    <div>WIN: {props.storeWin}</div>
+                    <div>LOSE: {props.storeLose}</div>
                 </div>
             </div>
             <div className='test' id='user-2'>
                 <div className='userInfo'>
                     <div className='HostMark'>{props.storeIsRoomOwner === 0 ? <i class="bi bi-star-fill"></i> : ""}</div>
                     <div>{opponentInfo.nickname}</div>
-                    <div>{opponentInfo.win}</div>
-                    <div>{opponentInfo.lose}</div>
+                    <div>WIN: {opponentInfo.win}</div>
+                    <div>LOSE: {opponentInfo.lose}</div>
                 </div>
             </div>
             <div className='test' id='menu'>
                 <div>
-                    <button onClick={props.handleExitRoom}>ExitModal</button>
+                    <button onClick={props.handleExitRoom}>ROOM EXIT</button>
                     <button onClick={props.handleGameArea}>TestModal</button>
                 </div>
             </div>

@@ -160,3 +160,22 @@
     height: 1080px;
     top: 50%;
 }
+
+#menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+#menu button {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: none;
+    background: rgba(0, 0, 0, 0);
+
+    font-size: 30px;
+}
+
+#menu button:hover {
+    color: white;
+}
