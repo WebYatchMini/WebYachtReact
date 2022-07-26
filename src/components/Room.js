@@ -88,7 +88,7 @@ function Room(props) {
         chatConnect();
     
         return () => chatDisconnect();
-      }, []);
+    }, []);
 
     const chatDisconnect = () => {
         client.current.deactivate();
@@ -116,7 +116,7 @@ function Room(props) {
         client.current.activate();
     };
     const chatSubscribe = () => {
-        this.client.current.subscribe(`/sub/chat/room/${this.props.storeRoomCode}`, (data) => {
+        client.current.subscribe(`/sub/chat/room/${props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
             appendChatList(data);
         });
