@@ -44,9 +44,11 @@ function ReadyArea(props) {
     useEffect(() => {
         gameSubscribe();
         client.publish({
-            destination: "/pub/game/room/enter ",
+            destination: "/pub/game/room/enter",
             body: JSON.stringify({
                 roomCode: props.storeRoomCode,
+                sender: props.storeIsRoomOwner,
+                message: "enter"
             })
         })
 
