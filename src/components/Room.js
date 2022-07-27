@@ -45,9 +45,8 @@ function ReadyArea(props) {
     const client = props.client;
     useEffect(() => {
         infoSubscribe();
-        readySubscribe();
         client.publish({
-            destination: "/pub/game/room/enter",
+            destination: "/pub/pregame/room/enter",
             body: JSON.stringify({
                 roomCode: props.storeRoomCode,
                 sender: props.storeIsRoomOwner,
@@ -61,33 +60,36 @@ function ReadyArea(props) {
         client.deactivate();
     }
     const infoSubscribe = () => {
-        client.subscribe(`/sub/game/room/${props.storeRoomCode}`, (data) => {
+        client.subscribe(`/sub/pregame/room/${props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
-            let arr = Array.from(data);
-            if (arr.length === 2) {
-                arr.forEach((user) => {
-                    if (user.uid !== props.storeUid) setOpponentInfo({
-                        nickname: user.nickname,
-                        win: user.win,
-                        lose: user.lose
-                    })
-                })
+            switch (data.type) {
+                case 0:
+                    let arr = Array.from(data.userProfileData)
+                    if (arr.length === 2) {
+                        arr.forEach((user) => {
+                            if (user.uid !== props.storeUid) setOpponentInfo({
+                                nickname: user.nickname,
+                                win: user.win,
+                                lose: user.lose
+                            })
+                        })
+                    }
+                    else if (arr.length === 1) {
+                        setOpponentInfo({
+                            nickname: '-',
+                            win: '-',
+                            lose: '-'
+                        })
+                        if (!props.storeIsRoomOwner) props.setRoomOwnerOn();
+                    }
+                    break;
+                case 1:
+                    if (props.storeIsRoomOwner) setOpponentState(data.ready);
+                    break;
+                default:
+                    console.log("unknown type")
+                    break;
             }
-            else if (arr.length === 1) {
-                setOpponentInfo({
-                    nickname: '-',
-                    win: '-',
-                    lose: '-'
-                })
-                if (!props.storeIsRoomOwner) props.setRoomOwnerOn();
-            }
-        })
-        // => 유저가 나갔을 때 방장 여부 수정 및 방에 있는 유저 수정
-    }
-    const readySubscribe = () => {
-        client.subscribe('/sub/game/room/readyState', (data) => {
-            data = JSON.parse(data.body);
-            if (props.storeIsRoomOwner) setOpponentState(data.ready);
         })
     }
     const handleReady = () => {
@@ -96,7 +98,7 @@ function ReadyArea(props) {
     }
     useEffect(() => {
         client.publish({
-            destination: "/pub/game/room/readyState",
+            destination: "/pub/pregame/room/readyState",
             body: JSON.stringify({
                 roomCode: props.storeRoomCode,
                 sender: props.storeIsRoomOwner,
