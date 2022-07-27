@@ -268,16 +268,18 @@ function Room(props) {
         else setIsReady(true);
     }
     useEffect(() => {
-        client.current.publish({
-            destination: "/pub/pregame/room/readyState",
-            body: JSON.stringify({
-                roomCode: storeRoomCode,
-                sender: storeIsRoomOwner,
-                ready: isReady
+        if (client.current != null) {
+            client.current.publish({
+                destination: "/pub/pregame/room/readyState",
+                body: JSON.stringify({
+                    roomCode: storeRoomCode,
+                    sender: storeIsRoomOwner,
+                    ready: isReady
+                })
             })
-        })
+        }
     }, [isReady]);
-    // => 최초 1회 신호가 씹히는 현상 수정해볼것
+    // 콜백함수 바꿔볼것, useEffect 등록 당시에는 client가 안만들어져 있는건지, publish가 undefined라
 
     return(
         <div className='common'>
