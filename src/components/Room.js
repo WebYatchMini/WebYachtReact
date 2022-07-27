@@ -35,87 +35,7 @@ function ExitModal(props) {
     );
 }
 function ReadyArea(props) {
-    const [opponentState, setOpponentState] = useState(false);
-    const [isReady, setIsReady] = useState(false);
-    const [opponentInfo, setOpponentInfo] = useState({
-        nickname: '-',
-        win: '-',
-        lose: '-'
-    });
-    const client = props.client;
-    useEffect(() => {
-        infoSubscribe();
-        client.publish({
-            destination: "/pub/pregame/room/enter",
-            body: JSON.stringify({
-                roomCode: props.storeRoomCode,
-                sender: props.storeIsRoomOwner,
-                message: "enter"
-            })
-        })
-        // => tcp header 20byte, ip header 20byte 포함 패킷 길이 최소 64byte 이상을 충족해야서 더미데이터 더 포함해서 보냄
-        return () => clientDisconnect();
-    }, []);  
-    const clientDisconnect = () => {
-        client.deactivate();
-    }
-    const infoSubscribe = () => {
-        client.subscribe(`/sub/pregame/room/${props.storeRoomCode}`, (data) => {
-            data = JSON.parse(data.body);
-            switch (data.type) {
-                case 0:
-                    /*
-                        type: 0,
-                        userProfileData: [ userInfoArray... ]
-                        유저 정보 교환 데이터
-                    */
-                    let arr = Array.from(data.userProfileData)
-                    if (arr.length === 2) {
-                        arr.forEach((user) => {
-                            if (user.uid !== props.storeUid) setOpponentInfo({
-                                nickname: user.nickname,
-                                win: user.win,
-                                lose: user.lose
-                            })
-                        })
-                    }
-                    else if (arr.length === 1) {
-                        if (props.storeIsRoomOwner === 0) props.setRoomOwnerOnStore();
-                        setOpponentInfo({
-                            nickname: '-',
-                            win: '-',
-                            lose: '-'
-                        })
-                    }
-                    break;
-                case 1:
-                    /*
-                        type: 1,
-                        ready: true/false
-                        준비 상태 교환 데이터
-                     */
-                    if (props.storeIsRoomOwner) setOpponentState(data.ready);
-                    break;
-                default:
-                    console.log("unknown type")
-                    break;
-            }
-        })
-    }
-    const handleReady = () => {
-        if (isReady) setIsReady(false);
-        else setIsReady(true);
-    }
-    useEffect(() => {
-        client.publish({
-            destination: "/pub/pregame/room/readyState",
-            body: JSON.stringify({
-                roomCode: props.storeRoomCode,
-                sender: props.storeIsRoomOwner,
-                ready: isReady
-            })
-        });
-    }, [isReady])
+    const client = props.client;  
 
     return (
         <div className='content' id='readyArea'>
@@ -128,22 +48,21 @@ function ReadyArea(props) {
                     <div>{props.storeNickname}</div>
                     <div>WIN: {props.storeWin}</div>
                     <div>LOSE: {props.storeLose}</div>
-                    {props.storeIsRoomOwner === 1 ? ( opponentState ? <button onClick={props.handleStart}> START </button> : <button disabled='true'> START </button>) : (<button onClick={handleReady}> READY </button>)}
+                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <button onClick={props.handleStart}> START </button> : <button disabled='true'> START </button>) : (<button onClick={props.handleReady}> READY </button>)}
                 </div>
             </div>
             <div className='test' id='user-2'>
                 <div className='userInfo'>
                     <div className='HostMark'>{props.storeIsRoomOwner === 0 ? <i class="bi bi-star-fill"></i> : ""}</div>
-                    <div>{opponentInfo.nickname}</div>
-                    <div>WIN: {opponentInfo.win}</div>
-                    <div>LOSE: {opponentInfo.lose}</div>
-                    {props.storeIsRoomOwner === 1 ? ( opponentState ? <div className='ready'> READY </div> : <div className='notReady'> READY </div>) : <div> HOST </div>}
+                    <div>{props.opponentInfo.nickname}</div>
+                    <div>WIN: {props.opponentInfo.win}</div>
+                    <div>LOSE: {props.opponentInfo.lose}</div>
+                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <div className='ready'> READY </div> : <div className='notReady'> READY </div>) : <div> HOST </div>}
                 </div>
             </div>
             <div className='test' id='menu'>
                 <div>
                     <button onClick={props.handleExitRoom}>ROOM EXIT</button>
-                    <button onClick={props.handleGameArea}>TestModal</button>
                 </div>
             </div>
         </div>
@@ -151,12 +70,12 @@ function ReadyArea(props) {
 }
 
 function GameArea(props) {
-    const client = props.client;
-    useEffect(() => {
-        client.publish()
-        // 초기 입장 신호 보내기
-        // game용 채널 subscribe 하기
-    },[])
+    // const client = 
+    // useEffect(() => {
+    //     client.publish()
+    //     // 초기 입장 신호 보내기
+    //     // game용 채널 subscribe 하기
+    // },[])
     return (
         <div className='content test' id='gameArea'>
         </div>
@@ -164,24 +83,7 @@ function GameArea(props) {
 }
 
 function ChatArea(props) {
-    const [chatList, setChatList] = useState([]);
-
     const client = props.client;
-    useEffect(() => {
-        chatSubscribe();
-    
-        return () => chatDisconnect();
-    }, []);
-
-    const chatDisconnect = () => {
-        client.deactivate();
-    }
-    const chatSubscribe = () => {
-        client.subscribe(`/sub/chat/room/${props.storeRoomCode}`, (data) => {
-            data = JSON.parse(data.body);
-            appendChatList(data);
-        });
-    };
     const chatPublish = (msg) => {
         if (!client.connected) {
             console.log("소켓 연결 X")
@@ -209,19 +111,7 @@ function ChatArea(props) {
         chatPublish(message)
     }
 
-    const appendChatList = (data) => {
-        const chat = {
-            sender: data.sender === props.storeIsRoomOwner ? 0 : 1,
-            message: data.message
-        }
-        setChatList((prev) => [...prev, chat])
-    }
-    useEffect(() => {
-        let chatList = document.getElementById("chatList");
-        chatList.scrollTop = chatList.scrollHeight;
-    }, [chatList])
-
-    const chattingList = Array.from(chatList).map((chat) => (
+    const chattingList = Array.from(props.chatList).map((chat) => (
         <div className={chat.sender === 0 ? "chatBox mine" : "chatBox opponent"}>
             <div className={chat.sender === 0 ? "chat mine" : "chat opponent"}>{chat.message}</div>
         </div>
@@ -241,10 +131,57 @@ function ChatArea(props) {
 function Room(props) {
     const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore } = props;
     const [ExitModalShow, setExitModalShow] = useState(false);
+    const [chatList, setChatList] = useState([]);    
+    const [opponentState, setOpponentState] = useState(false);
+    const [isReady, setIsReady] = useState(false);
+    const [opponentInfo, setOpponentInfo] = useState({
+        nickname: '-',
+        win: '-',
+        lose: '-'
+    });
     const [game, setGame] = useState(false);
 
-    const client = props.client;
+    const client = useRef({});
+    useEffect(() => {
+        socketConnect();
 
+        return () => socketDisconnect()
+    },[]);
+
+    const socketConnect = () => {
+        client.current = new StompJs.Client({
+            // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+            webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
+            connectHeaders: {
+            },
+            debug: (str) => {
+                console.log(str);
+            },
+            reconnectDelay: 5000, //자동 재 연결
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+            onConnect: () => {
+                chatSubscribe();
+                infoSubscribe();
+                client.current.publish({
+                    destination: "/pub/pregame/room/enter",
+                    body: JSON.stringify({
+                        roomCode: storeRoomCode,
+                        sender: storeIsRoomOwner,
+                        message: "enter"
+                    })
+                })
+            },
+            onStompError: (frame) => {
+                console.log(frame);
+            }
+        });
+        client.current.activate();
+    }
+    const socketDisconnect = () => {
+        if (client.current.connected)
+        client.current.deactivate();
+    }
     const handleExit = () => {
         const requstOption = {
             method : 'POST',
@@ -255,7 +192,6 @@ function Room(props) {
             })
         }
         fetch('/api/room/exit', requstOption)
-        client.deactivate();
         props.roomResetStore();
         props.navigate('/main');
     }
@@ -268,6 +204,83 @@ function Room(props) {
         // 상대에게 시작알림 보내기
         // 마찬가지로 수신하는 함수 필요
     }
+
+    const appendChatList = (data) => {
+        const chat = {
+            sender: data.sender === storeIsRoomOwner ? 0 : 1,
+            message: data.message
+        }
+        setChatList((prev) => [...prev, chat])
+    }
+    useEffect(() => {
+        let chatList = document.getElementById("chatList");
+        chatList.scrollTop = chatList.scrollHeight;
+    }, [chatList])
+
+    const chatSubscribe = () => {
+        client.current.subscribe(`/sub/chat/room/${props.storeRoomCode}`, (data) => {
+            data = JSON.parse(data.body);
+            appendChatList(data);
+        });
+    };
+
+    const infoSubscribe = () => {
+        client.current.subscribe(`/sub/pregame/room/${props.storeRoomCode}`, (data) => {
+            data = JSON.parse(data.body);
+            switch (data.type) {
+                case 0:
+                    /*
+                        type: 0,
+                        userProfileData: [ userInfoArray... ]
+                        유저 정보 교환 데이터
+                    */
+                    let arr = Array.from(data.userProfileData)
+                    if (arr.length === 2) {
+                        arr.forEach((user) => {
+                            if (user.uid !== props.storeUid) setOpponentInfo({
+                                nickname: user.nickname,
+                                win: user.win,
+                                lose: user.lose
+                            })
+                        })
+                    }
+                    else if (arr.length === 1) {
+                        if (props.storeIsRoomOwner === 0) setRoomOwnerOnStore();
+                        setOpponentInfo({
+                            nickname: '-',
+                            win: '-',
+                            lose: '-'
+                        })
+                    }
+                    break;
+                case 1:
+                    /*
+                        type: 1,
+                        ready: true/false
+                        준비 상태 교환 데이터
+                     */
+                    if (props.storeIsRoomOwner) setOpponentState(data.ready);
+                    break;
+                default:
+                    console.log("unknown type")
+                    break;
+            }
+        })
+    }
+    const handleReady = () => {
+        if (isReady) setIsReady(false);
+        else setIsReady(true);
+    }
+    useEffect(() => {
+        client.current.publish({
+            destination: "/pub/pregame/room/readyState",
+            body: JSON.stringify({
+                roomCode: props.storeRoomCode,
+                sender: props.storeIsRoomOwner,
+                ready: isReady
+            })
+        });
+    }, [isReady])
 
     return(
         <div className='common'>
@@ -296,12 +309,17 @@ function Room(props) {
                 storeIsRoomOwner={storeIsRoomOwner}
                 setRoomOwnerOnStore={setRoomOwnerOnStore}
                 setRoomOwnerOffStore={setRoomOwnerOffStore}
+                opponentState={opponentState}
+                opponentInfo={opponentInfo}
+                isReady={isReady}
+                handleReady={handleReady}
                 handleExitRoom={handleExitRoom}
                 handleStart={handleStart}
                 client={client}
                 />}
                 <ChatArea
                 client={client}
+                chatList={chatList}
                 storeRoomCode={storeRoomCode}
                 storeIsRoomOwner={storeIsRoomOwner}
                 />    
@@ -329,30 +347,11 @@ const mapDispatchToProps = (dispatch) => ({
     roomResetStore: () => dispatch(roomAction.reset())
 })
 
-const client = new StompJs.Client({
-    // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-    webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
-    connectHeaders: {
-    },
-    debug: (str) => {
-        console.log(str);
-    },
-    reconnectDelay: 5000, //자동 재 연결
-    heartbeatIncoming: 4000,
-    heartbeatOutgoing: 4000,
-    onConnect: () => {
-    },
-    onStompError: (frame) => {
-        console.log(frame);
-    }
-});
-
 export default function RoomWithNavigate(props) {
-    client.activate();
     const navigate = useNavigate();
     const MainClass = connect(mapStateToProps, mapDispatchToProps)(Room)
 
-    return <MainClass client={client} navigate={navigate}/>
+    return <MainClass navigate={navigate}/>
 }
 
 // TODO : 채팅창 디자인 / 채팅창 구현
