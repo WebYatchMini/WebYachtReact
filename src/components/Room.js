@@ -35,8 +35,6 @@ function ExitModal(props) {
     );
 }
 function ReadyArea(props) {
-    const client = props.client;  
-
     return (
         <div className='content' id='readyArea'>
             <div className='test' id='header'>
@@ -129,7 +127,7 @@ function ChatArea(props) {
 }
 
 function Room(props) {
-    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore } = props;
+    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore, roomResetStore } = props;
     const [ExitModalShow, setExitModalShow] = useState(false);
     const [chatList, setChatList] = useState([]);    
     const [opponentState, setOpponentState] = useState(false);
@@ -187,12 +185,12 @@ function Room(props) {
             method : 'POST',
             headers: { 'Content-Type': 'application/json' },
             body : JSON.stringify({
-                uid: props.storeUid,
-                roomCode : props.storeRoomCode,
+                uid: storeUid,
+                roomCode : storeRoomCode,
             })
         }
         fetch('/api/room/exit', requstOption)
-        props.roomResetStore();
+        roomResetStore();
         props.navigate('/main');
     }
 
@@ -218,14 +216,14 @@ function Room(props) {
     }, [chatList])
 
     const chatSubscribe = () => {
-        client.current.subscribe(`/sub/chat/room/${props.storeRoomCode}`, (data) => {
+        client.current.subscribe(`/sub/chat/room/${storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
             appendChatList(data);
         });
     };
 
     const infoSubscribe = () => {
-        client.current.subscribe(`/sub/pregame/room/${props.storeRoomCode}`, (data) => {
+        client.current.subscribe(`/sub/pregame/room/${storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
             switch (data.type) {
                 case 0:
@@ -237,7 +235,7 @@ function Room(props) {
                     let arr = Array.from(data.userProfileData)
                     if (arr.length === 2) {
                         arr.forEach((user) => {
-                            if (user.uid !== props.storeUid) setOpponentInfo({
+                            if (user.uid !== storeUid) setOpponentInfo({
                                 nickname: user.nickname,
                                 win: user.win,
                                 lose: user.lose
@@ -245,7 +243,7 @@ function Room(props) {
                         })
                     }
                     else if (arr.length === 1) {
-                        if (props.storeIsRoomOwner === 0) setRoomOwnerOnStore();
+                        if (storeIsRoomOwner === 0) setRoomOwnerOnStore();
                         setOpponentInfo({
                             nickname: '-',
                             win: '-',
@@ -259,7 +257,7 @@ function Room(props) {
                         ready: true/false
                         준비 상태 교환 데이터
                      */
-                    if (props.storeIsRoomOwner) setOpponentState(data.ready);
+                    if (storeIsRoomOwner) setOpponentState(data.ready);
                     break;
                 default:
                     console.log("unknown type")
@@ -275,8 +273,8 @@ function Room(props) {
         client.current.publish({
             destination: "/pub/pregame/room/readyState",
             body: JSON.stringify({
-                roomCode: props.storeRoomCode,
-                sender: props.storeIsRoomOwner,
+                roomCode: storeRoomCode,
+                sender: storeIsRoomOwner,
                 ready: isReady
             })
         });
