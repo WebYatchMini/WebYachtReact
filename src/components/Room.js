@@ -142,7 +142,6 @@ function Room(props) {
     const client = useRef({});
     useEffect(() => {
         socketConnect();
-
         return () => socketDisconnect()
     },[]);
 
@@ -177,8 +176,7 @@ function Room(props) {
         client.current.activate();
     }
     const socketDisconnect = () => {
-        if (client.current.connected)
-        client.current.deactivate();
+        if (client.current.connected) client.current.deactivate();
     }
     const handleExit = () => {
         const requstOption = {
@@ -268,8 +266,6 @@ function Room(props) {
     const handleReady = () => {
         if (isReady) setIsReady(false);
         else setIsReady(true);
-    }
-    useEffect(() => {
         client.current.publish({
             destination: "/pub/pregame/room/readyState",
             body: JSON.stringify({
@@ -277,8 +273,8 @@ function Room(props) {
                 sender: storeIsRoomOwner,
                 ready: isReady
             })
-        });
-    }, [isReady])
+        })
+    }
 
     return(
         <div className='common'>
