@@ -35,6 +35,7 @@ function ExitModal(props) {
     );
 }
 function ReadyArea(props) {
+    const [opponentState, setOpponentState] = useState(false)
     const [opponentInfo, setOpponentInfo] = useState({
         nickname: '-',
         win: '-',
@@ -93,6 +94,7 @@ function ReadyArea(props) {
                     <div>{props.storeNickname}</div>
                     <div>WIN: {props.storeWin}</div>
                     <div>LOSE: {props.storeLose}</div>
+                    {props.storeIsRoomOwner === 1 ? <button> START </button> : <button> READY </button>}
                 </div>
             </div>
             <div className='test' id='user-2'>
@@ -101,6 +103,7 @@ function ReadyArea(props) {
                     <div>{opponentInfo.nickname}</div>
                     <div>WIN: {opponentInfo.win}</div>
                     <div>LOSE: {opponentInfo.lose}</div>
+                    {props.storeIsRoomOwner === 1 ? ( opponentState ? <div className='ready'> READY </div> : <div className='notReady'> READY </div>) : <div> HOST </div>}
                 </div>
             </div>
             <div className='test' id='menu'>
@@ -228,6 +231,7 @@ function Room(props) {
         <div className='common'>
             {(() => {
                 if (!storeLogin) return <Navigate to='/login' replace={true}/>
+                if (!storeRoomCode === '-') return <Navigate to='/main' replace={true}/>
             })()}
             <ExitModal 
             show={ExitModalShow}

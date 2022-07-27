@@ -68,7 +68,7 @@
 }
 .HostMark {
     position: relative;
-    bottom: 600px;
+    bottom: 532.5px;
     right: 217.5px;
     font-size: 50px;
     color: gold;
@@ -92,6 +92,23 @@
     margin-top: 15px;
     margin-bottom: 15px;
 }
+.userInfo .ready {
+    color: white;
+}
+.userInfo .notReady {
+    color: rgb(70, 70, 70);
+}
+
+.userInfo button {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0);
+    border: 0px;
+}
+.userInfo button:hover {
+    color: white;
+}
+
 
 #menu {
     grid-area: menu;
