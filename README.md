@@ -2,7 +2,8 @@
 bootstrap -> index.html에 cdn으로 선언해놓긴 했지만, npm install react-bootstrap으로 설치\
 react-router -> 리액트 프로젝트 최상위 폴더에서 npm install react-router-dom 설치 필요\
 react-redux -> 사용될 값들을 관리하기 위함, 마찬가지로 npm install react-redux 설치 필요, npm install redux도 같이 설치 해줘야함\
-sokect.js, stomp -> 소켓 관련으로 필요한 것들, npm install socket-client, @stomp/stompjs
+redux-persist -> 새로고침 이후에도 리덕스값이 사라지지 않도록 세션에 저장, npm install redux-persist
+sokect.js, stomp -> 소켓 관련으로 필요한 것들, npm install sockjs-client, @stomp/stompjs
 
 
 # 시작
