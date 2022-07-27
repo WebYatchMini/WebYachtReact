@@ -351,28 +351,27 @@ const mapDispatchToProps = (dispatch) => ({
     roomResetStore: () => dispatch(roomAction.reset())
 })
 
-const client = new StompJs.Client({
-    // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-    webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
-    connectHeaders: {
-    },
-    debug: (str) => {
-        console.log(str);
-    },
-    reconnectDelay: 5000, //자동 재 연결
-    heartbeatIncoming: 4000,
-    heartbeatOutgoing: 4000,
-    onConnect: () => {
-    },
-    onStompError: (frame) => {
-        console.log(frame);
-    }
-});
-client.activate();
-
 export default function RoomWithNavigate(props) {
     const navigate = useNavigate();
     const MainClass = connect(mapStateToProps, mapDispatchToProps)(Room)
+    const client = new StompJs.Client({
+        // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+        webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
+        connectHeaders: {
+        },
+        debug: (str) => {
+            console.log(str);
+        },
+        reconnectDelay: 5000, //자동 재 연결
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        onConnect: () => {
+        },
+        onStompError: (frame) => {
+            console.log(frame);
+        }
+    });
+    client.activate();
     return <MainClass client={client} navigate={navigate}/>
 }
 
