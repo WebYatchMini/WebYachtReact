@@ -266,6 +266,8 @@ function Room(props) {
     const handleReady = () => {
         if (isReady) setIsReady(false);
         else setIsReady(true);
+    }
+    useEffect(() => {
         client.current.publish({
             destination: "/pub/pregame/room/readyState",
             body: JSON.stringify({
@@ -274,7 +276,8 @@ function Room(props) {
                 ready: isReady
             })
         })
-    }
+    }, [isReady]);
+    // => 최초 1회 신호가 씹히는 현상 수정해볼것
 
     return(
         <div className='common'>
@@ -309,10 +312,10 @@ function Room(props) {
                 handleReady={handleReady}
                 handleExitRoom={handleExitRoom}
                 handleStart={handleStart}
-                client={client}
+                client={client.current}
                 />}
                 <ChatArea
-                client={client}
+                client={client.current}
                 chatList={chatList}
                 storeRoomCode={storeRoomCode}
                 storeIsRoomOwner={storeIsRoomOwner}
