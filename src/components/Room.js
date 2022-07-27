@@ -44,7 +44,8 @@ function ReadyArea(props) {
     });
     const client = props.client;
     useEffect(() => {
-        gameSubscribe();
+        infoSubscribe();
+        readySubscribe();
         client.publish({
             destination: "/pub/game/room/enter",
             body: JSON.stringify({
@@ -54,12 +55,12 @@ function ReadyArea(props) {
             })
         })
         // => tcp header 20byte, ip header 20byte 포함 패킷 길이 최소 64byte 이상을 충족해야서 더미데이터 더 포함해서 보냄
-        return () => gameDisconnect();
+        return () => clientDisconnect();
     }, []);  
-    const gameDisconnect = () => {
+    const clientDisconnect = () => {
         client.deactivate();
     }
-    const gameSubscribe = () => {
+    const infoSubscribe = () => {
         client.subscribe(`/sub/game/room/${props.storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
             let arr = Array.from(data);
@@ -83,16 +84,26 @@ function ReadyArea(props) {
         })
         // => 유저가 나갔을 때 방장 여부 수정 및 방에 있는 유저 수정
     }
-    const handleReady = () => {
-        if (isReady) {
-            setIsReady(false);
-        }
-        else {
-            setIsReady(true);
-        }
-        // 상대에게 준비 상태 바뀐것을 소켓으로 보내기
-        // 수신 함수 따로 필요
+    const readySubscribe = () => {
+        client.subscribe('/sub/game/room/readyState', (data) => {
+            data = JSON.parse(data.body);
+            if (props.storeIsRoomOwner) setOpponentState(data.ready);
+        })
     }
+    const handleReady = () => {
+        if (isReady) setIsReady(false);
+        else setIsReady(true);
+    }
+    useEffect(() => {
+        client.publish({
+            destination: "/pub/game/room/readyState",
+            body: JSON.stringify({
+                roomCode: props.storeRoomCode,
+                sender: props.storeIsRoomOwner,
+                ready: isReady
+            })
+        });
+    }, [isReady])
 
     return (
         <div className='content' id='readyArea'>
