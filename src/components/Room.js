@@ -244,28 +244,28 @@ function Room(props) {
     const [TestModalShow, setTestModalShow] = useState(false);
     const [game, setGame] = useState(false);
 
-    const client = createRef({});
-    useEffect(() => {
-        client.current = new StompJs.Client({
-            // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-            webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
-            connectHeaders: {
-            },
-            debug: (str) => {
-                console.log(str);
-            },
-            reconnectDelay: 5000, //자동 재 연결
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000,
-            onConnect: () => {
-                
-            },
-            onStompError: (frame) => {
-                console.log(frame);
-            }
-        });
-        client.current.activate();
-    }, [])
+    const client = props.client;
+    // const client = createRef({});
+    // useEffect(() => {
+    //     client.current = new StompJs.Client({
+    //         // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+    //         webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
+    //         connectHeaders: {
+    //         },
+    //         debug: (str) => {
+    //             console.log(str);
+    //         },
+    //         reconnectDelay: 5000, //자동 재 연결
+    //         heartbeatIncoming: 4000,
+    //         heartbeatOutgoing: 4000,
+    //         onConnect: () => {
+    //         },
+    //         onStompError: (frame) => {
+    //             console.log(frame);
+    //         }
+    //     });
+    //     client.current.activate();
+    // }, []);
 
     const handleExit = () => {
         const requstOption = {
@@ -277,7 +277,7 @@ function Room(props) {
             })
         }
         fetch('/api/room/exit', requstOption)
-        client.current.deactivate();
+        client.deactivate();
         props.roomResetStore();
         props.navigate('/main');
     }
@@ -320,10 +320,10 @@ function Room(props) {
                 setRoomOwnerOffStore={setRoomOwnerOffStore}
                 handleExitRoom={handleExitRoom}
                 handleStart={handleStart}
-                client={client.current}
+                client={client}
                 />}
                 <ChatArea
-                client={client.current}
+                client={client}
                 storeRoomCode={storeRoomCode}
                 storeIsRoomOwner={storeIsRoomOwner}
                 />    
@@ -351,10 +351,29 @@ const mapDispatchToProps = (dispatch) => ({
     roomResetStore: () => dispatch(roomAction.reset())
 })
 
+const client = new StompJs.Client({
+    // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+    webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
+    connectHeaders: {
+    },
+    debug: (str) => {
+        console.log(str);
+    },
+    reconnectDelay: 5000, //자동 재 연결
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000,
+    onConnect: () => {
+    },
+    onStompError: (frame) => {
+        console.log(frame);
+    }
+});
+client.activate();
+
 export default function RoomWithNavigate(props) {
     const navigate = useNavigate();
     const MainClass = connect(mapStateToProps, mapDispatchToProps)(Room)
-    return <MainClass navigate={navigate}/>
+    return <MainClass client={client} navigate={navigate}/>
 }
 
 // TODO : 채팅창 디자인 / 채팅창 구현
