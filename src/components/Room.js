@@ -241,31 +241,9 @@ function ChatArea(props) {
 function Room(props) {
     const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore } = props;
     const [ExitModalShow, setExitModalShow] = useState(false);
-    const [TestModalShow, setTestModalShow] = useState(false);
     const [game, setGame] = useState(false);
 
     const client = props.client;
-    // const client = createRef({});
-    // useEffect(() => {
-    //     client.current = new StompJs.Client({
-    //         // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-    //         webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
-    //         connectHeaders: {
-    //         },
-    //         debug: (str) => {
-    //             console.log(str);
-    //         },
-    //         reconnectDelay: 5000, //자동 재 연결
-    //         heartbeatIncoming: 4000,
-    //         heartbeatOutgoing: 4000,
-    //         onConnect: () => {
-    //         },
-    //         onStompError: (frame) => {
-    //             console.log(frame);
-    //         }
-    //     });
-    //     client.current.activate();
-    // }, []);
 
     const handleExit = () => {
         const requstOption = {
@@ -351,27 +329,29 @@ const mapDispatchToProps = (dispatch) => ({
     roomResetStore: () => dispatch(roomAction.reset())
 })
 
+const client = new StompJs.Client({
+    // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
+    webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
+    connectHeaders: {
+    },
+    debug: (str) => {
+        console.log(str);
+    },
+    reconnectDelay: 5000, //자동 재 연결
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000,
+    onConnect: () => {
+    },
+    onStompError: (frame) => {
+        console.log(frame);
+    }
+});
+
 export default function RoomWithNavigate(props) {
+    client.activate();
     const navigate = useNavigate();
     const MainClass = connect(mapStateToProps, mapDispatchToProps)(Room)
-    const client = new StompJs.Client({
-        // brokerURL: '/api/ws', => 웹소켓 서버로 직접 접속
-        webSocketFactory: () => new SockJS("stomp/connection"),    // proxy를 통한 접속
-        connectHeaders: {
-        },
-        debug: (str) => {
-            console.log(str);
-        },
-        reconnectDelay: 5000, //자동 재 연결
-        heartbeatIncoming: 4000,
-        heartbeatOutgoing: 4000,
-        onConnect: () => {
-        },
-        onStompError: (frame) => {
-            console.log(frame);
-        }
-    });
-    client.activate();
+
     return <MainClass client={client} navigate={navigate}/>
 }
 
