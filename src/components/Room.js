@@ -64,6 +64,11 @@ function ReadyArea(props) {
             data = JSON.parse(data.body);
             switch (data.type) {
                 case 0:
+                    /*
+                        type: 0,
+                        userProfileData: [ userInfoArray... ]
+                        유저 정보 교환 데이터
+                    */
                     let arr = Array.from(data.userProfileData)
                     if (arr.length === 2) {
                         arr.forEach((user) => {
@@ -80,10 +85,15 @@ function ReadyArea(props) {
                             win: '-',
                             lose: '-'
                         })
-                        if (!props.storeIsRoomOwner) props.setRoomOwnerOn();
+                        if (props.storeIsRoomOwner === 0) props.setRoomOwnerOn();
                     }
                     break;
                 case 1:
+                    /*
+                        type: 1,
+                        ready: true/false
+                        준비 상태 교환 데이터
+                     */
                     if (props.storeIsRoomOwner) setOpponentState(data.ready);
                     break;
                 default:
@@ -141,6 +151,12 @@ function ReadyArea(props) {
 }
 
 function GameArea(props) {
+    const client = props.client;
+    useEffect(() => {
+        client.publish()
+        // 초기 입장 신호 보내기
+        // game용 채널 subscribe 하기
+    },[])
     return (
         <div className='content test' id='gameArea'>
         </div>
