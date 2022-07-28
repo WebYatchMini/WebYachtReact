@@ -139,7 +139,7 @@ function Room(props) {
     });
     const [game, setGame] = useState(false);
 
-    const client = useRef({});
+    const client = useRef(null);
     useEffect(() => {
         socketConnect();
         return () => socketDisconnect()
@@ -293,7 +293,7 @@ function Room(props) {
         else setIsReady(true);
     }
     useEffect(() => {
-        if (client.current != null) {
+        if (client.current !== null) {
             client.current.publish({
                 destination: "/pub/pregame/room/readyState",
                 body: JSON.stringify({
