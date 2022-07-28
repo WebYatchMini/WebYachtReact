@@ -46,7 +46,7 @@ function ReadyArea(props) {
                     <div>{props.storeNickname}</div>
                     <div>WIN: {props.storeWin}</div>
                     <div>LOSE: {props.storeLose}</div>
-                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <button onClick={props.handleStart}> START </button> : <button disabled='true'> START </button>) : (<button onClick={props.handleReady}> READY </button>)}
+                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <button onClick={props.handleStart}> START </button> : <button className='notReady' disabled='true'> START </button>) : (<button onClick={props.handleReady}> READY </button>)}
                 </div>
             </div>
             <div className='test' id='user-2'>
@@ -159,7 +159,8 @@ function Room(props) {
             heartbeatOutgoing: 4000,
             onConnect: () => {
                 chatSubscribe();
-                infoSubscribe();
+                preGameSubscribe();
+                gameSubscribe();
                 client.current.publish({
                     destination: "/pub/pregame/room/enter",
                     body: JSON.stringify({
@@ -196,9 +197,14 @@ function Room(props) {
         setExitModalShow(true)
     }
     const handleStart = () => {
-        setGame(true)
-        // 상대에게 시작알림 보내기
-        // 마찬가지로 수신하는 함수 필요
+        client.current.publish({
+            destination: "/pub/pregame/room/start",
+            body: JSON.stringify({
+                roomCode: storeRoomCode,
+                sender: storeIsRoomOwner
+            })
+        })
+        // 방장이 서버에 시작 신호 -> 서버에서 양측에 브로드캐스트로 알리면 시작
     }
 
     const appendChatList = (data) => {
@@ -220,7 +226,7 @@ function Room(props) {
         });
     };
 
-    const infoSubscribe = () => {
+    const preGameSubscribe = () => {
         client.current.subscribe(`/sub/pregame/room/${storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
             switch (data.type) {
@@ -257,12 +263,31 @@ function Room(props) {
                      */
                     if (storeIsRoomOwner) setOpponentState(data.ready);
                     break;
+                case 2:
+                    /*
+                        type: 2
+                        게임 시작 알림 데이터
+                    */
+                    setGame(true);
+                    break;
                 default:
-                    console.log("unknown type")
+                    console.log("unknown type");
                     break;
             }
         })
     }
+
+    const gameSubscribe = () => {
+        client.current.subscribe(`/sub/game/room/${storeRoomCode}`, (data) => {
+            data = JSON.parse(data.body);
+            switch (data.type) {
+                default:
+                    console.log("unknown type");
+                    break;
+            }
+        });
+    };
+
     const handleReady = () => {
         if (isReady) setIsReady(false);
         else setIsReady(true);
