@@ -128,6 +128,7 @@ function ChatArea(props) {
 
 function Room(props) {
     const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore, roomResetStore } = props;
+    const [socketStatus, setSocketStatus] = useState(false);
     const [ExitModalShow, setExitModalShow] = useState(false);
     const [chatList, setChatList] = useState([]);    
     const [opponentState, setOpponentState] = useState(false);
@@ -139,7 +140,7 @@ function Room(props) {
     });
     const [game, setGame] = useState(false);
 
-    const client = useRef(null);
+    const client = useRef({});
     useEffect(() => {
         socketConnect();
         return () => socketDisconnect()
@@ -158,6 +159,7 @@ function Room(props) {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             onConnect: () => {
+                setSocketStatus(true);
                 chatSubscribe();
                 preGameSubscribe();
                 gameSubscribe();
@@ -177,7 +179,11 @@ function Room(props) {
         client.current.activate();
     }
     const socketDisconnect = () => {
-        if (client.current.connected) client.current.deactivate();
+        if (client.current.connected) {
+            setSocketStatus(false);
+            client.current.deactivate();
+
+        }
     }
     const handleExit = () => {
         const requstOption = {
@@ -293,7 +299,7 @@ function Room(props) {
         else setIsReady(true);
     }
     useEffect(() => {
-        if (client.current !== null) {
+        if (socketStatus) {
             client.current.publish({
                 destination: "/pub/pregame/room/readyState",
                 body: JSON.stringify({
