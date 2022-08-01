@@ -68,17 +68,73 @@ function ReadyArea(props) {
 }
 
 function GameArea(props) {
-    // const client = 
-    // useEffect(() => {
-    //     client.publish()
-    //     // 초기 입장 신호 보내기
-    //     // game용 채널 subscribe 하기
-    // },[])
+    const recordArray = ['Ones', 'Twos', 'Threes', 'Fours', 'Fives', 'Sixes', 'Bonus', 
+                        'Choice', '3 of a kind', '4 of a kind', 'Full House', 
+                        'S.Straight', 'L.Straight', 'Yacht'];
+    const myRecordList = Array.from(recordArray).map((record, idx) => (
+        <div className='record'>
+            <div className='recordName'>{record}</div>:
+            <div className='recordScore'>{props.myRecord[idx]}</div>
+        </div>
+    ))
+    const oppRecordList = Array.from(recordArray).map((record, idx) => (
+        <div className='record'>
+            <div className='recordName'>{record}</div>:
+            <div className='recordScore'>{props.oppRecord[idx]}</div>
+        </div>
+    ))
+
     return (
-        <div className='content test' id='gameArea'>
+        <div className='content' id='gameArea'>
+            <div className='test recordList' id='myRecord'>
+                <div className='recordHeader'>{props.storeNickname}</div>
+                {myRecordList}
+            </div>
+            <div className='test recordList' id='oppRecord'>
+                <div className='recordHeader'>{props.opponentInfo.nickname}</div>
+                {oppRecordList}
+            </div>
+            <div className='test playArea' id='myArea'>
+
+                <div id='myDiceArea'>
+                    <i class="bi bi-dice-1-fill"></i>
+                    <i class="bi bi-dice-2-fill"></i>
+                    <i class="bi bi-dice-3-fill"></i>
+                    <i class="bi bi-dice-4-fill"></i>
+                    <i class="bi bi-dice-5-fill"></i>
+                    <i class="bi bi-dice-6-fill"></i>
+                </div>
+                <div id='mySavedArea'>
+                    <i class="bi bi-dice-1-fill"></i>
+                    <i class="bi bi-dice-2-fill"></i>
+                    <i class="bi bi-dice-3-fill"></i>
+                    <i class="bi bi-dice-4-fill"></i>
+                    <i class="bi bi-dice-5-fill"></i>
+                    <i class="bi bi-dice-6-fill"></i>
+                </div>
+            </div>
+            <div className='test playArea' id='oppArea'>
+                <div id='oppSavedArea'>
+                    <i class="bi bi-dice-1-fill"></i>
+                    <i class="bi bi-dice-2-fill"></i>
+                    <i class="bi bi-dice-3-fill"></i>
+                    <i class="bi bi-dice-4-fill"></i>
+                    <i class="bi bi-dice-5-fill"></i>
+                    <i class="bi bi-dice-6-fill"></i>
+                </div>
+                <div id='oppDiceArea'>
+                    <i class="bi bi-dice-1-fill"></i>
+                    <i class="bi bi-dice-2-fill"></i>
+                    <i class="bi bi-dice-3-fill"></i>
+                    <i class="bi bi-dice-4-fill"></i>
+                    <i class="bi bi-dice-5-fill"></i>
+                    <i class="bi bi-dice-6-fill"></i>
+                </div>
+            </div>
         </div>
     );
 }
+// 주사위 렌더링은 bootstrap icons에 있는 주사위를 사용해도 될 것 같다.
 
 function ChatArea(props) {
     const client = props.client;
@@ -127,7 +183,7 @@ function ChatArea(props) {
 }
 
 function Room(props) {
-    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore, roomResetStore } = props;
+    const { storeUid, storeNickname, storeWin, storeLose, storeLogin, storeRoomTitle, storeRoomCode, storeIsRoomOwner, setRoomOwnerOnStore, setRoomOwnerOffStore, roomResetStore, increaseWinStore, increaseLoseStore } = props;
     const [socketStatus, setSocketStatus] = useState(false);
     const [ExitModalShow, setExitModalShow] = useState(false);
     const [chatList, setChatList] = useState([]);    
@@ -138,7 +194,19 @@ function Room(props) {
         win: '-',
         lose: '-'
     });
+
     const [game, setGame] = useState(false);
+    const [diceCount, setDiceCount] = useState(5);
+    const [myDice, setMyDice] = useState([0, 0, 0, 0, 0]);
+    const [oppDice, setOppDice] = useState([0, 0, 0, 0, 0]);
+    const [savedMyDice, setSavedMyDice] = useState([]);
+    const [saveOppDice, setSavedOppDice] = useState([]);
+    const [myRecord, setMyRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+    const [oppRecord, setOppRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+    const [turn, setTurn] = useState(0);
+    const [phase, setPhase] = useState(0);
+    const [round, setRound] = useState(0);
+
 
     const client = useRef({});
     useEffect(() => {
@@ -207,7 +275,8 @@ function Room(props) {
             destination: "/pub/pregame/room/start",
             body: JSON.stringify({
                 roomCode: storeRoomCode,
-                sender: storeIsRoomOwner
+                sender: storeIsRoomOwner,
+                message: "start",
             })
         })
         // 방장이 서버에 시작 신호 -> 서버에서 양측에 브로드캐스트로 알리면 시작
@@ -327,7 +396,22 @@ function Room(props) {
             />
             <div className='container-fluid' id='roomContainer'>
                 {game ? 
-                <GameArea/>
+                <GameArea
+                increaseWinStore={increaseWinStore}
+                increaseLoseStore={increaseLoseStore}
+                opponentInfo={opponentInfo}
+                storeNickname={storeNickname}
+                diceCount={diceCount}
+                myDice={myDice}
+                oppDice={oppDice}
+                savedMyDice={savedMyDice}
+                saveOppDice={saveOppDice}
+                myRecord={myRecord}
+                oppRecord={oppRecord}
+                turn={turn}
+                phase={phase}
+                round={round}
+                />
                 :
                 <ReadyArea
                 storeUid={storeUid}
@@ -371,7 +455,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    resetStore: () => dispatch(userAction.reset()),
+    increaseWinStore: () => dispatch(userAction.increaseWin()),
+    increaseLoseStore: () => dispatch(userAction.increaseLose()),
     setRoomOwnerOnStore : () => dispatch(userAction.setRoomOwnerOn()),
     setRoomOwnerOffStore : () => dispatch(userAction.setRoomOwnerOff()),
     roomResetStore: () => dispatch(roomAction.reset())
