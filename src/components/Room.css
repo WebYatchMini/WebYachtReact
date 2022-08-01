@@ -221,7 +221,7 @@
     flex-direction: row;
     align-items: center;
 
-    height: 46px;
+    height: 42px;
     margin-top: 10px;
     margin-bottom: 10px;
 
@@ -244,6 +244,26 @@
 #gameArea .recordList .record .recordScore {
     width: 50px;
 }
+#gameArea .recordList .recordTotal {
+    display: flex;
+    border: black 5px double;
+
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    height: 42px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#gameArea .recordList .recordTotal .recordName {
+    width: 150px
+}
+#gameArea .recordList .recordTotal .recordScore {
+    width: 50px;
+}
+
 #gameArea .playArea {
     display: flex;
     flex-direction: column;
@@ -252,6 +272,7 @@
 }
 #gameArea #myArea {
     grid-area: myArea;
+    color: white
 }
 #gameArea #myArea #myDiceArea {
     flex-basis: 60%;

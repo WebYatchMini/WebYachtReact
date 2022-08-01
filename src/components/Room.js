@@ -89,10 +89,18 @@ function GameArea(props) {
             <div className='test recordList' id='myRecord'>
                 <div className='recordHeader'>{props.storeNickname}</div>
                 {myRecordList}
+                <div className='recordTotal'>
+                    <div className='recordName'>TOTAL</div>:
+                    <div className='recordScore'>-</div>
+                </div>
             </div>
             <div className='test recordList' id='oppRecord'>
                 <div className='recordHeader'>{props.opponentInfo.nickname}</div>
                 {oppRecordList}
+                <div className='recordTotal'>
+                    <div className='recordName'>TOTAL</div>:
+                    <div className='recordScore'>-</div>
+                </div>
             </div>
             <div className='test playArea' id='myArea'>
 
