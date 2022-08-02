@@ -86,12 +86,12 @@ function GameArea(props) {
             <div className='recordScore'>{props.oppRecord[idx]}</div>
         </div>
     ))
-    const myDiceList = Array.from(Array(props.diceCount).keys()).map((idx) => (
+    const myDiceList = Array.from(Array(props.myDice.length).keys()).map((idx) => (
         <button onClick={() => {props.saveDiceByIdx(idx)}}>
             <i className={"bi bi-dice-" + props.myDice[idx] +"-fill"}></i>
         </button>
     ))
-    const mySavedDiceList = Array.from(Array(props.saveDiceCount).keys()).map((idx) => (
+    const mySavedDiceList = Array.from(Array(props.savedMyDice.length).keys()).map((idx) => (
         <button onClick={() => {props.returnDiceByIdx(idx)}}>
             <i className={"bi bi-dice-" + props.savedMyDice[idx] +"-fill"}></i>
         </button>
@@ -132,8 +132,8 @@ function GameArea(props) {
             <div className='test' id='infoArea'>
                 <div id='round'>{turnArray[props.round - 1]} ROUND</div>
                 <div id='turn'>
-                    <div>{props.turn ? '상대 턴' : '나의 턴'}</div>
-                    <div>{props.turn ? <i className="bi bi-arrow-up"></i> : <i className="bi bi-arrow-down"></i>}</div>
+                    <div>{props.turn ? '나의 턴' : '상대 턴'}</div>
+                    <div>{props.turn ? <i className="bi bi-arrow-down"></i> : <i className="bi bi-arrow-up"></i>}</div>
                 </div>
                 <div id='phase'>{phaseArray[props.phase]}</div>
             </div>
@@ -148,13 +148,21 @@ function GameArea(props) {
                     <div id='myControlArea'>
                         <button>test1</button>
                         <button>test2</button>
-                        <button>test3</button>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+/*
+남은일 
+소켓으로 받는 데이터 토대로 상대방 과정 렌더링
+나의 턴일때만 조작버튼 활성화 + 주사위 렌더링
+주사위 굴리기
+주사위 굴린거 토대로 가능한 족보만 선택 가능하게 바꾸기
+족보 확정하기
+13라운드 이후 최종점수에 따른 승패
+*/
 
 function ChatArea(props) {
     const client = props.client;
@@ -216,12 +224,11 @@ function Room(props) {
     });
 
     const [game, setGame] = useState(false);
-    const [diceCount, setDiceCount] = useState(5);
-    const [saveDiceCount, setSaveDiceCount] = useState(0);
-    const [myDice, setMyDice] = useState([1, 2, 3, 4, 5]);
-    const [oppDice, setOppDice] = useState([1, 2]);
+    const [myDice, setMyDice] = useState([1, 2, 3, 3, 3]);
+    const [oppDice, setOppDice] = useState([2, 3]);
     const [savedMyDice, setSavedMyDice] = useState([]);
-    const [saveOppDice, setSavedOppDice] = useState([3, 4 ,5]);
+    const [saveOppDice, setSavedOppDice] = useState([1, 3, 3]);
+    const [pickAvailability, setPickAvailability] = useState([false, false, false, false, false, false, false, false, false, false, false, false, false, false])
     const [myRecord, setMyRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [oppRecord, setOppRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [turn, setTurn] = useState(0);
@@ -234,8 +241,6 @@ function Room(props) {
         tempArr.splice(idx, 1)
         setMyDice([...tempArr]);
         setSavedMyDice([...savedMyDice, temp]);
-        setDiceCount(diceCount - 1);
-        setSaveDiceCount(saveDiceCount + 1);
     }
     const returnDiceByIdx = (idx) => {
         let temp = savedMyDice[idx];
@@ -243,8 +248,6 @@ function Room(props) {
         tempArr.splice(idx, 1)
         setSavedMyDice([...tempArr]);
         setMyDice([...myDice, temp]);
-        setDiceCount(diceCount + 1);
-        setSaveDiceCount(saveDiceCount - 1);
     }
 
 
@@ -395,10 +398,20 @@ function Room(props) {
     const gameSubscribe = () => {
         client.current.subscribe(`/sub/game/room/${storeRoomCode}`, (data) => {
             data = JSON.parse(data.body);
-            switch (data.type) {
-                default:
-                    console.log("unknown type");
-                    break;
+            /*
+                private int turn;
+                private ArrayList<Integer> dices;
+                private ArrayList<Boolean> pickAvailability;
+                private boolean isOwnersTurn;
+            */
+            setRound(data.turn)
+            setTurn(data.isOwnerTurn === storeIsRoomOwner ? 1 : 0);
+            if (data.isOwnerTurn === storeIsRoomOwner) {
+                setMyDice(data.dices);
+                // 선택 가능한 족보는 내 데이터에서만 추가할 것
+            }
+            else {
+                setOppDice(data.dices);
             }
         });
     };
@@ -441,12 +454,11 @@ function Room(props) {
                 increaseLoseStore={increaseLoseStore}
                 opponentInfo={opponentInfo}
                 storeNickname={storeNickname}
-                diceCount={diceCount}
-                saveDiceCount={saveDiceCount}
                 myDice={myDice}
                 oppDice={oppDice}
                 savedMyDice={savedMyDice}
                 saveOppDice={saveOppDice}
+                pickAvailability={pickAvailability}
                 myRecord={myRecord}
                 oppRecord={oppRecord}
                 turn={turn}
