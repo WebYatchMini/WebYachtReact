@@ -79,7 +79,7 @@ function GameArea(props) {
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.myRecord[idx]}</div>
         </div>
-    ))
+    )) // => props.pickAvailability에 따라 선택 가능한 족보 표시 할것 + 이미 기록한 점수는 선택 못하게 할것.
     const oppRecordList = Array.from(recordArray).map((record, idx) => (
         <div className='record'>
             <div className='recordName'>{record}</div>:
@@ -224,10 +224,10 @@ function Room(props) {
     });
 
     const [game, setGame] = useState(false);
-    const [myDice, setMyDice] = useState([1, 2, 3, 3, 3]);
-    const [oppDice, setOppDice] = useState([2, 3]);
+    const [myDice, setMyDice] = useState([]);
+    const [oppDice, setOppDice] = useState([]);
     const [savedMyDice, setSavedMyDice] = useState([]);
-    const [saveOppDice, setSavedOppDice] = useState([1, 3, 3]);
+    const [saveOppDice, setSavedOppDice] = useState([]);
     const [pickAvailability, setPickAvailability] = useState([false, false, false, false, false, false, false, false, false, false, false, false, false, false])
     const [myRecord, setMyRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [oppRecord, setOppRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
@@ -405,13 +405,13 @@ function Room(props) {
                 private boolean isOwnersTurn;
             */
             setRound(data.turn)
-            setTurn(data.isOwnerTurn === storeIsRoomOwner ? 1 : 0);
-            if (data.isOwnerTurn === storeIsRoomOwner) {
-                setMyDice(data.dices);
+            setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
+            if (data.isOwnersTurn === storeIsRoomOwner) {
+                setMyDice([...data.dices]);
                 // 선택 가능한 족보는 내 데이터에서만 추가할 것
             }
             else {
-                setOppDice(data.dices);
+                setOppDice([...data.dices]);
             }
         });
     };
