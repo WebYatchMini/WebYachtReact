@@ -198,15 +198,20 @@
 
     display: grid;
     grid-template-columns: 0.5fr 2fr 0.5fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 0.175fr 1fr;
     grid-template-areas: 
     "myRecord oppArea oppRecord"
+    "myRecord infoArea oppRecord"
     "myRecord myArea oppRecord";
     row-gap: 10px;
     column-gap: 10px;
 }
 #gameArea #myRecord {
     grid-area: myRecord;
+}
+#gameArea #infoArea {
+    grid-area: infoArea;
+    display: flex;
 }
 #gameArea #oppRecord {
     grid-area: oppRecord;
@@ -285,7 +290,7 @@
     justify-content: center;
     align-items: center;
 }
-#gameArea #myArea #mySavedArea {
+#gameArea #myArea #mySubArea {
     flex-basis: 40%;
     margin: 10px 10px 10px 10px;
     background-color: rgba(30, 30, 30, 0.5);
@@ -296,6 +301,46 @@
     justify-content: center;
     align-items: center;
 }
+#gameArea #myArea #mySubArea #mySavedArea {
+    flex-basis: 70%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#gameArea #myArea #mySubArea #myControlArea {
+    flex-basis: 30%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 30px;
+}
+
+#gameArea #infoArea #round{
+    flex-basis: 33%;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#gameArea #infoArea #turn {
+    flex-basis: 33%;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#gameArea #infoArea #phase{
+    flex-basis: 33%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #gameArea #oppArea {
     grid-area: oppArea;
 }
@@ -320,4 +365,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#gameArea button {
+    background: rgba(0, 0, 0, 0);
+    border: none;
 }

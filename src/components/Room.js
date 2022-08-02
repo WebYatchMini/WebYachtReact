@@ -71,6 +71,9 @@ function GameArea(props) {
     const recordArray = ['Ones', 'Twos', 'Threes', 'Fours', 'Fives', 'Sixes', 'Bonus', 
                         'Choice', '3 of a kind', '4 of a kind', 'Full House', 
                         'S.Straight', 'L.Straight', 'Yacht'];
+    const turnArray = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH',
+                        '8TH', '9TH', '10TH', '11TH', '12TH', '13TH'];
+    const phaseArray = ['1번째 주사위', '2번째 주사위', '3번째 주사위', '족보 선택 중']
     const myRecordList = Array.from(recordArray).map((record, idx) => (
         <div className='record'>
             <div className='recordName'>{record}</div>:
@@ -82,6 +85,22 @@ function GameArea(props) {
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.oppRecord[idx]}</div>
         </div>
+    ))
+    const myDiceList = Array.from(Array(props.diceCount).keys()).map((idx) => (
+        <button onClick={() => {props.saveDiceByIdx(idx)}}>
+            <i className={"bi bi-dice-" + props.myDice[idx] +"-fill"}></i>
+        </button>
+    ))
+    const mySavedDiceList = Array.from(Array(props.saveDiceCount).keys()).map((idx) => (
+        <button onClick={() => {props.returnDiceByIdx(idx)}}>
+            <i className={"bi bi-dice-" + props.savedMyDice[idx] +"-fill"}></i>
+        </button>
+    ))
+    const oppDiceList = Array.from(Array(props.oppDice.length).keys()).map((idx) => (
+        <i className={"bi bi-dice-" + props.oppDice[idx] +"-fill"}></i>
+    ))
+    const oppSavedDiceList = Array.from(Array(props.saveOppDice.length).keys()).map((idx) => (
+        <i className={"bi bi-dice-" + props.saveOppDice[idx] +"-fill"}></i>
     ))
 
     return (
@@ -102,47 +121,40 @@ function GameArea(props) {
                     <div className='recordScore'>-</div>
                 </div>
             </div>
-            <div className='test playArea' id='myArea'>
-
-                <div id='myDiceArea'>
-                    <i class="bi bi-dice-1-fill"></i>
-                    <i class="bi bi-dice-2-fill"></i>
-                    <i class="bi bi-dice-3-fill"></i>
-                    <i class="bi bi-dice-4-fill"></i>
-                    <i class="bi bi-dice-5-fill"></i>
-                    <i class="bi bi-dice-6-fill"></i>
-                </div>
-                <div id='mySavedArea'>
-                    <i class="bi bi-dice-1-fill"></i>
-                    <i class="bi bi-dice-2-fill"></i>
-                    <i class="bi bi-dice-3-fill"></i>
-                    <i class="bi bi-dice-4-fill"></i>
-                    <i class="bi bi-dice-5-fill"></i>
-                    <i class="bi bi-dice-6-fill"></i>
-                </div>
-            </div>
             <div className='test playArea' id='oppArea'>
                 <div id='oppSavedArea'>
-                    <i class="bi bi-dice-1-fill"></i>
-                    <i class="bi bi-dice-2-fill"></i>
-                    <i class="bi bi-dice-3-fill"></i>
-                    <i class="bi bi-dice-4-fill"></i>
-                    <i class="bi bi-dice-5-fill"></i>
-                    <i class="bi bi-dice-6-fill"></i>
+                    {oppSavedDiceList}
                 </div>
                 <div id='oppDiceArea'>
-                    <i class="bi bi-dice-1-fill"></i>
-                    <i class="bi bi-dice-2-fill"></i>
-                    <i class="bi bi-dice-3-fill"></i>
-                    <i class="bi bi-dice-4-fill"></i>
-                    <i class="bi bi-dice-5-fill"></i>
-                    <i class="bi bi-dice-6-fill"></i>
+                    {oppDiceList}
+                </div>
+            </div>
+            <div className='test' id='infoArea'>
+                <div id='round'>{turnArray[props.round - 1]} ROUND</div>
+                <div id='turn'>
+                    <div>{props.turn ? '상대 턴' : '나의 턴'}</div>
+                    <div>{props.turn ? <i className="bi bi-arrow-up"></i> : <i className="bi bi-arrow-down"></i>}</div>
+                </div>
+                <div id='phase'>{phaseArray[props.phase]}</div>
+            </div>
+            <div className='test playArea' id='myArea'>
+                <div id='myDiceArea'>
+                    {myDiceList}
+                </div>
+                <div id='mySubArea'>
+                    <div id='mySavedArea'>
+                        {mySavedDiceList}
+                    </div>
+                    <div id='myControlArea'>
+                        <button>test1</button>
+                        <button>test2</button>
+                        <button>test3</button>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
-// 주사위 렌더링은 bootstrap icons에 있는 주사위를 사용해도 될 것 같다.
 
 function ChatArea(props) {
     const client = props.client;
@@ -205,15 +217,35 @@ function Room(props) {
 
     const [game, setGame] = useState(false);
     const [diceCount, setDiceCount] = useState(5);
-    const [myDice, setMyDice] = useState([0, 0, 0, 0, 0]);
-    const [oppDice, setOppDice] = useState([0, 0, 0, 0, 0]);
+    const [saveDiceCount, setSaveDiceCount] = useState(0);
+    const [myDice, setMyDice] = useState([1, 2, 3, 4, 5]);
+    const [oppDice, setOppDice] = useState([1, 2]);
     const [savedMyDice, setSavedMyDice] = useState([]);
-    const [saveOppDice, setSavedOppDice] = useState([]);
+    const [saveOppDice, setSavedOppDice] = useState([3, 4 ,5]);
     const [myRecord, setMyRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [oppRecord, setOppRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [turn, setTurn] = useState(0);
     const [phase, setPhase] = useState(0);
-    const [round, setRound] = useState(0);
+    const [round, setRound] = useState(1);
+
+    const saveDiceByIdx = (idx) => {
+        let temp = myDice[idx];
+        let tempArr = myDice;
+        tempArr.splice(idx, 1)
+        setMyDice([...tempArr]);
+        setSavedMyDice([...savedMyDice, temp]);
+        setDiceCount(diceCount - 1);
+        setSaveDiceCount(saveDiceCount + 1);
+    }
+    const returnDiceByIdx = (idx) => {
+        let temp = savedMyDice[idx];
+        let tempArr = savedMyDice;
+        tempArr.splice(idx, 1)
+        setSavedMyDice([...tempArr]);
+        setMyDice([...myDice, temp]);
+        setDiceCount(diceCount + 1);
+        setSaveDiceCount(saveDiceCount - 1);
+    }
 
 
     const client = useRef({});
@@ -410,6 +442,7 @@ function Room(props) {
                 opponentInfo={opponentInfo}
                 storeNickname={storeNickname}
                 diceCount={diceCount}
+                saveDiceCount={saveDiceCount}
                 myDice={myDice}
                 oppDice={oppDice}
                 savedMyDice={savedMyDice}
@@ -419,6 +452,8 @@ function Room(props) {
                 turn={turn}
                 phase={phase}
                 round={round}
+                saveDiceByIdx={saveDiceByIdx}
+                returnDiceByIdx={returnDiceByIdx}
                 />
                 :
                 <ReadyArea
