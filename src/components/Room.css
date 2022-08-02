@@ -197,12 +197,18 @@
     top: 50%;
 
     display: grid;
-    grid-template-columns: 0.5fr 2fr 0.5fr;
+    /* grid-template-columns: 0.5fr 2fr 0.5fr;
     grid-template-rows: 1fr 0.175fr 1fr;
     grid-template-areas: 
     "myRecord oppArea oppRecord"
     "myRecord infoArea oppRecord"
-    "myRecord myArea oppRecord";
+    "myRecord myArea oppRecord"; */
+    grid-template-columns: 0.5fr 0.5fr 2fr;
+    grid-template-rows: 1fr 0.175fr 1fr;
+    grid-template-areas: 
+    "myRecord oppRecord oppArea "
+    "myRecord oppRecord infoArea "
+    "myRecord oppRecord myArea ";
     row-gap: 10px;
     column-gap: 10px;
 }
