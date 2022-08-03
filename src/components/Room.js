@@ -75,11 +75,19 @@ function GameArea(props) {
                         '8TH', '9TH', '10TH', '11TH', '12TH', '13TH'];
     const phaseArray = ['1번째 주사위', '2번째 주사위', '3번째 주사위', '족보 선택 중']
     const myRecordList = Array.from(recordArray).map((record, idx) => (
-        <div className='record'>
+        <div className={props.myRecord[idx] !== '-' || idx === 6 ? 'recorded' : 
+            (props.selectedRecordIdx === idx ? 'record selected' : 'record')}
+            onClick={() => {
+                if (props.myRecord[idx] === '-') {
+                    if (props.selectedRecordIdx !== idx) props.setSelectedRecordIdx(idx);
+                    else props.setSelectedRecordIdx(-1);
+                }
+            }}
+        >
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.myRecord[idx]}</div>
         </div>
-    )) // => props.pickAvailability에 따라 선택 가능한 족보 표시 할것 + 이미 기록한 점수는 선택 못하게 할것.
+    ))
     const oppRecordList = Array.from(recordArray).map((record, idx) => (
         <div className='record'>
             <div className='recordName'>{record}</div>:
@@ -110,7 +118,7 @@ function GameArea(props) {
                 {myRecordList}
                 <div className='recordTotal'>
                     <div className='recordName'>TOTAL</div>:
-                    <div className='recordScore'>-</div>
+                    <div className='recordScore'>{props.myTotalScore}</div>
                 </div>
             </div>
             <div className='test recordList' id='oppRecord'>
@@ -118,7 +126,7 @@ function GameArea(props) {
                 {oppRecordList}
                 <div className='recordTotal'>
                     <div className='recordName'>TOTAL</div>:
-                    <div className='recordScore'>-</div>
+                    <div className='recordScore'>{props.oppTotalScore}</div>
                 </div>
             </div>
             <div className='test playArea' id='oppArea'>
@@ -146,8 +154,8 @@ function GameArea(props) {
                         {mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
-                        <button>test1</button>
-                        <button>test2</button>
+                        <button className={props.phase === 3 ? 'disable' : 'able'} disabled={props.phase === 3 ? true : false} id='rollDice'>Roll dice</button>
+                        <button className='able' id='recordSelect'>Select {recordArray[props.selectedRecordIdx]}</button>
                     </div>
                 </div>
             </div>
@@ -158,8 +166,10 @@ function GameArea(props) {
 남은일 
 소켓으로 받는 데이터 토대로 상대방 과정 렌더링
 나의 턴일때만 조작버튼 활성화 + 주사위 렌더링
-주사위 굴리기
-주사위 굴린거 토대로 가능한 족보만 선택 가능하게 바꾸기
+조작 버튼은 주사위페이즈 (1, 2, 3) 에는 ROLL, CONFIRM 모두 활성화
+주사위 페이즈가 모두 끝난 4페이즈 에서는 CONFIRM만 활성화
+주사위 굴리기 => 굴리기 요청시, 굴릴 주사위 개수와 저장한 주사위 개수를 같이 보낼 것.
+주사위 굴린거 토대로 가능한 족보만 선택 가능하게 바꾸기 => 이때, 저장한 주사위들 같이 보내주기
 족보 확정하기
 13라운드 이후 최종점수에 따른 승패
 */
@@ -231,6 +241,9 @@ function Room(props) {
     const [pickAvailability, setPickAvailability] = useState([false, false, false, false, false, false, false, false, false, false, false, false, false, false])
     const [myRecord, setMyRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [oppRecord, setOppRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+    const [selectedRecordIdx, setSelectedRecordIdx] = useState(-1);
+    const [myTotalScore, setMyTotalScore] = useState(0);
+    const [oppTotalScore, setOppTotalScore] = useState(0);
     const [turn, setTurn] = useState(0);
     const [phase, setPhase] = useState(0);
     const [round, setRound] = useState(1);
@@ -249,7 +262,12 @@ function Room(props) {
         setSavedMyDice([...tempArr]);
         setMyDice([...myDice, temp]);
     }
+    const rollDice = () => {
 
+    }
+    const selectRecord = () => {
+
+    }
 
     const client = useRef({});
     useEffect(() => {
@@ -408,9 +426,10 @@ function Room(props) {
             setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
             if (data.isOwnersTurn === storeIsRoomOwner) {
                 setMyDice([...data.dices]);
-                // 선택 가능한 족보는 내 데이터에서만 추가할 것
+                setOppDice([]);
             }
             else {
+                setMyDice([]);
                 setOppDice([...data.dices]);
             }
         });
@@ -466,6 +485,12 @@ function Room(props) {
                 round={round}
                 saveDiceByIdx={saveDiceByIdx}
                 returnDiceByIdx={returnDiceByIdx}
+                rollDice={rollDice}
+                selectRecord={selectRecord}
+                selectedRecordIdx={selectedRecordIdx}
+                setSelectedRecordIdx={setSelectedRecordIdx}
+                myTotalScore={myTotalScore}
+                oppTotalScore={oppTotalScore}
                 />
                 :
                 <ReadyArea
