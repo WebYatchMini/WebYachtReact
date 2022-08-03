@@ -154,8 +154,8 @@ function GameArea(props) {
                         {mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
-                        <button className={props.phase === 3 ? 'disable' : 'able'} disabled={props.phase === 3 ? true : false} id='rollDice'>Roll dice</button>
-                        <button className='able' id='recordSelect'>Select {recordArray[props.selectedRecordIdx]}</button>
+                        <button className={props.phase === 3 ? 'disable' : 'able'} disabled={props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
+                        <button className='able' id='recordSelect' onClick={props.selectRecord}>Select {recordArray[props.selectedRecordIdx]} {props.selectedRecordIdx !== -1 ? '(' + props.pickAvailability[props.selectedRecordIdx] + ')' : ''}</button>
                     </div>
                 </div>
             </div>
@@ -238,7 +238,7 @@ function Room(props) {
     const [oppDice, setOppDice] = useState([]);
     const [savedMyDice, setSavedMyDice] = useState([]);
     const [saveOppDice, setSavedOppDice] = useState([]);
-    const [pickAvailability, setPickAvailability] = useState([false, false, false, false, false, false, false, false, false, false, false, false, false, false])
+    const [pickAvailability, setPickAvailability] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     const [myRecord, setMyRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [oppRecord, setOppRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [selectedRecordIdx, setSelectedRecordIdx] = useState(-1);
@@ -263,10 +263,36 @@ function Room(props) {
         setMyDice([...myDice, temp]);
     }
     const rollDice = () => {
-
+        /*
+        보낼 데이터
+        private ArrayList<Integer> keep;
+        private int rollAmount;
+        private String roomCode;
+        */
+        client.current.publish({
+            destination: "/pub/game/room/reroll",
+            body: JSON.stringify({
+                keep: [...savedMyDice],
+                rollAmount: myDice.length,
+                roomCode: storeRoomCode,
+            })
+        })
     }
     const selectRecord = () => {
-
+        /*
+        보낼 데이터
+        private String roomCode;
+        private ArrayList<Boolean> picked;
+        */
+        const pickedArr = Array(14).fill(false);
+        pickedArr[selectedRecordIdx] = true;
+        client.current.publish({
+            destination: "/pub/game/room/pick",
+            body: JSON.stringify({
+                picked: pickedArr,
+                roomCode: storeRoomCode,
+            })
+        })
     }
 
     const client = useRef({});
@@ -419,18 +445,36 @@ function Room(props) {
             /*
                 private int turn;
                 private ArrayList<Integer> dices;
-                private ArrayList<Boolean> pickAvailability;
+                private ArrayList<Integer> KeptDices;
                 private boolean isOwnersTurn;
+                private LinkedHashMap<String,Integer> PickAvailability;
+                    => value값만 추출해서 ArrayList<Integer> PickAvailabilityScore형태
+                private ArrayList<ArrayList<Integer>> Pick
+                private int sum 
+                private int phase -
             */
-            setRound(data.turn)
+            setRound(data.turn);
+            setPhase(data.phase);
             setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
+            
+            let other = data.isOwnersTurn === 1 ? 0 : 1;
+            setMyRecord([...data.pick[data.isOwnersTurn]]);
+            setOppRecord([...data.pick[other]]);
+
             if (data.isOwnersTurn === storeIsRoomOwner) {
+                setMyTotalScore(data.sum);
+
                 setMyDice([...data.dices]);
                 setOppDice([]);
+                setPickAvailability([...data.pickAvailabilityScore]);
             }
             else {
+                setOppTotalScore(data.sum);
+
                 setMyDice([]);
+                setSavedMyDice([]);
                 setOppDice([...data.dices]);
+                setSavedOppDice([...data.keptDices]);
             }
         });
     };
