@@ -86,12 +86,13 @@ function GameArea(props) {
         >
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.myRecord[idx]}</div>
+            <div className='possibleScore'>{props.myRecord[idx] === '-' && idx !== 6? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
         </div>
     ))
     const oppRecordList = Array.from(recordArray).map((record, idx) => (
         <div className='record'>
             <div className='recordName'>{record}</div>:
-            <div className='recordScore'>{props.oppRecord[idx]}</div>
+            <div className='oppRecordScore'>{props.oppRecord[idx]}</div>
         </div>
     ))
     const myDiceList = Array.from(Array(props.myDice.length).keys()).map((idx) => (
@@ -458,17 +459,9 @@ function Room(props) {
             setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
             
             let other = data.isOwnersTurn === 1 ? 0 : 1;
-            let myList = [];
-            let oppList = [];
+            let myList = Array.from(data.pick[data.isOwnersTurn]).map((value) => (value === -1 ? '-' : value));
+            let oppList = Array.from(data.pick[other]).map((value) => (value === -1 ? '-' : value));
 
-            Array.from(data.pick[data.isOwnersTurn]).forEach((value) => {
-                if (value === -1) myList = [...myList, '-'];
-                else myList = [...myList, value];
-            })
-            Array.from(data.pick[other]).forEach((value) => {
-                if (value === -1) oppList = [...myList, '-'];
-                else oppList = [...oppList, value];
-            })
             setMyRecord([...myList]);
             setOppRecord([...oppList]);
 

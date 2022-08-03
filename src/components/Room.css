@@ -266,16 +266,25 @@
     padding-bottom: 10px;
 }
 #gameArea .recordList .recorded .recordName {
-    width: 150px
+    width: 100px
 }
 #gameArea .recordList .recorded .recordScore {
     width: 50px;
 }
+#gameArea .recordList .recorded .possibleScore {
+    width: 50px;
+}
 #gameArea .recordList .record .recordName {
-    width: 150px
+    width: 100px
 }
 #gameArea .recordList .record .recordScore {
     width: 50px;
+}
+#gameArea .recordList .record .possibleScore {
+    width: 50px;
+}
+#gameArea .recordList .record .oppRecordScore {
+    width: 100px;
 }
 #gameArea .recordList .recordTotal {
     display: flex;
