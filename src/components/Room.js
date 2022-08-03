@@ -78,7 +78,7 @@ function GameArea(props) {
         <div className={props.myRecord[idx] !== '-' || idx === 6 ? 'recorded' : 
             (props.selectedRecordIdx === idx ? 'record selected' : 'record')}
             onClick={() => {
-                if (props.myRecord[idx] === '-') {
+                if (props.myRecord[idx] === '-' && idx !== 6) {
                     if (props.selectedRecordIdx !== idx) props.setSelectedRecordIdx(idx);
                     else props.setSelectedRecordIdx(-1);
                 }
