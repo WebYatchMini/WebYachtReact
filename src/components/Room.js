@@ -458,8 +458,19 @@ function Room(props) {
             setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
             
             let other = data.isOwnersTurn === 1 ? 0 : 1;
-            setMyRecord([...data.pick[data.isOwnersTurn]]);
-            setOppRecord([...data.pick[other]]);
+            let myList = [];
+            let oppList = [];
+
+            Array.from(data.pick[data.isOwnersTurn]).forEach((value) => {
+                if (value === -1) myList = [...myList, '-'];
+                else myList = [...myList, value];
+            })
+            Array.from(data.pick[other]).forEach((value) => {
+                if (value === -1) oppList = [...myList, '-'];
+                else oppList = [...oppList, value];
+            })
+            setMyRecord([...myList]);
+            setOppRecord([...oppList]);
 
             if (data.isOwnersTurn === storeIsRoomOwner) {
                 setMyTotalScore(data.sum);
