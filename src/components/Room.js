@@ -86,7 +86,7 @@ function GameArea(props) {
         >
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.myRecord[idx]}</div>
-            <div className='possibleScore'>{props.myRecord[idx] === '-' && idx !== 6 && props.isOwnersTurn === props.isRoomOwner ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
+            <div className='possibleScore'>{props.turn === 1 && props.myRecord[idx] === '-' && idx !== 6 ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
         </div>
     ))
     const oppRecordList = Array.from(recordArray).map((record, idx) => (
@@ -154,8 +154,8 @@ function GameArea(props) {
                         {mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
-                        <button className={props.phase === 3 || props.storeIsRoomOwner !== props.isOwnersTurn ? 'disable' : 'able'} disabled={props.phase === 3 || props.storeIsRoomOwner !== props.isOwnersTurn ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
-                        <button className={props.storeIsRoomOwner !== props.isOwnersTurn ? 'disable' : 'able'} disabled={props.storeIsRoomOwner !== props.isOwnersTurn ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
+                        <button className={props.turn === 0 || props.phase === 3 ? 'disable' : 'able'} disabled={props.turn === 0 || props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
+                        <button className={props.turn === 0 ? 'disable' : 'able'} disabled={props.turn === 0  ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
                     </div>
                 </div>
             </div>
