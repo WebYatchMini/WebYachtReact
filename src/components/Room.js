@@ -458,8 +458,8 @@ function Room(props) {
             setPhase(data.phase);
             setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
             
-            let other = data.isOwnersTurn === 1 ? 0 : 1;
-            let myList = Array.from(data.pick[data.isOwnersTurn]).map((value) => (value === -1 ? '-' : value));
+            let other = storeIsRoomOwner === 1 ? 0 : 1;
+            let myList = Array.from(data.pick[storeIsRoomOwner]).map((value) => (value === -1 ? '-' : value));
             let oppList = Array.from(data.pick[other]).map((value) => (value === -1 ? '-' : value));
 
             setMyRecord([...myList]);
