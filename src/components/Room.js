@@ -451,7 +451,8 @@ function Room(props) {
                 private LinkedHashMap<String,Integer> PickAvailability;
                     => value값만 추출해서 ArrayList<Integer> PickAvailabilityScore형태
                 private ArrayList<ArrayList<Integer>> Pick
-                private int sum 
+                private int p1Sum => 방장 데이터
+                private int p2Sum => 상대방 데이터
                 private int phase -
             */
             setRound(data.turn);
@@ -464,10 +465,16 @@ function Room(props) {
 
             setMyRecord([...myList]);
             setOppRecord([...oppList]);
+            if (storeIsRoomOwner) {
+                setMyTotalScore(data.p1Sum);
+                setOppTotalScore(data.p2Sum);
+            }
+            else {
+                setMyTotalScore(data.p2Sum);
+                setOppTotalScore(data.p1Sum);
+            }
 
             if (data.isOwnersTurn === storeIsRoomOwner) {
-                setMyTotalScore(data.sum);
-
                 setMyDice([...data.dices]);
                 setOppDice([]);
                 setSavedOppDice([])
@@ -475,8 +482,6 @@ function Room(props) {
                 setPickAvailability([...data.pickAvailabilityScore]);
             }
             else {
-                setOppTotalScore(data.sum);
-
                 setMyDice([]);
                 setSavedMyDice([]);
                 setOppDice([...data.dices]);
