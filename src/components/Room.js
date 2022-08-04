@@ -111,7 +111,6 @@ function GameArea(props) {
     const oppSavedDiceList = Array.from(Array(props.saveOppDice.length).keys()).map((idx) => (
         <i className={"bi bi-dice-" + props.saveOppDice[idx] +"-fill"}></i>
     ))
-
     return (
         <div className='content' id='gameArea'>
             <div className='test recordList' id='myRecord'>
@@ -155,8 +154,8 @@ function GameArea(props) {
                         {mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
-                        <button className={props.phase === 3 ? 'disable' : 'able'} disabled={props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
-                        <button className='able' id='recordSelect' onClick={props.selectRecord}>Select</button>
+                        <button className={props.phase === 3 || props.storeIsRoomOwner !== props.isOwnersTurn ? 'disable' : 'able'} disabled={props.phase === 3 || props.storeIsRoomOwner !== props.isOwnersTurn ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
+                        <button className={props.storeIsRoomOwner !== props.isOwnersTurn ? 'disable' : 'able'} disabled={props.storeIsRoomOwner !== props.isOwnersTurn ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
                     </div>
                 </div>
             </div>
@@ -486,6 +485,8 @@ function Room(props) {
                 setSavedMyDice([]);
                 setOppDice([...data.dices]);
                 setSavedOppDice([...data.keptDices]);
+
+                setPickAvailability([]);
             }
         });
     };
