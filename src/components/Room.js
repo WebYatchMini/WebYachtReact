@@ -46,7 +46,7 @@ function ReadyArea(props) {
                     <div>{props.storeNickname}</div>
                     <div>WIN: {props.storeWin}</div>
                     <div>LOSE: {props.storeLose}</div>
-                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <button onClick={props.handleStart}> START </button> : <button className='notReady' disabled='true'> START </button>) : (<button onClick={props.handleReady}> READY </button>)}
+                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <button onClick={props.handleStart}> START </button> : <button className='notReady' disabled='true'> START </button>) : (props.isReady ? <button className='ready' onClick={props.handleReady}> READY </button> : <button className='notReady' onClick={props.handleReady}> READY </button>)}
                 </div>
             </div>
             <div className='test' id='user-2'>
@@ -164,13 +164,6 @@ function GameArea(props) {
 }
 /*
 남은일 
-소켓으로 받는 데이터 토대로 상대방 과정 렌더링
-나의 턴일때만 조작버튼 활성화 + 주사위 렌더링
-조작 버튼은 주사위페이즈 (1, 2, 3) 에는 ROLL, CONFIRM 모두 활성화
-주사위 페이즈가 모두 끝난 4페이즈 에서는 CONFIRM만 활성화
-주사위 굴리기 => 굴리기 요청시, 굴릴 주사위 개수와 저장한 주사위 개수를 같이 보낼 것.
-주사위 굴린거 토대로 가능한 족보만 선택 가능하게 바꾸기 => 이때, 저장한 주사위들 같이 보내주기
-족보 확정하기
 13라운드 이후 최종점수에 따른 승패
 */
 
