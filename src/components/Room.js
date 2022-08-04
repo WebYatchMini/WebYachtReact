@@ -156,7 +156,7 @@ function GameArea(props) {
                     </div>
                     <div id='myControlArea'>
                         <button className={props.phase === 3 ? 'disable' : 'able'} disabled={props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
-                        <button className='able' id='recordSelect' onClick={props.selectRecord}>Select {recordArray[props.selectedRecordIdx]} {props.selectedRecordIdx !== -1 ? '(' + props.pickAvailability[props.selectedRecordIdx] + ')' : ''}</button>
+                        <button className='able' id='recordSelect' onClick={props.selectRecord}>Select</button>
                     </div>
                 </div>
             </div>
@@ -470,6 +470,8 @@ function Room(props) {
 
                 setMyDice([...data.dices]);
                 setOppDice([]);
+                setSavedOppDice([])
+
                 setPickAvailability([...data.pickAvailabilityScore]);
             }
             else {
