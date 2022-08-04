@@ -86,7 +86,7 @@ function GameArea(props) {
         >
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.myRecord[idx]}</div>
-            <div className='possibleScore'>{props.myRecord[idx] === '-' && idx !== 6? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
+            <div className='possibleScore'>{props.myRecord[idx] === '-' && idx !== 6 && props.isOwnersTurn === props.isRoomOwner ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
         </div>
     ))
     const oppRecordList = Array.from(recordArray).map((record, idx) => (
@@ -445,7 +445,7 @@ function Room(props) {
                 private ArrayList<ArrayList<Integer>> Pick
                 private int p1Sum => 방장 데이터
                 private int p2Sum => 상대방 데이터
-                private int phase -
+                private int phase
             */
             setRound(data.turn);
             setPhase(data.phase);
