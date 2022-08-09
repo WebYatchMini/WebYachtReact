@@ -91,7 +91,7 @@ function GameArea(props) {
     ))
     const oppTurnMyRecordList = Array.from(recordArray).map((record, idx) => (
         <div className={props.myRecord[idx] !== '-' || idx === 6 ? 'recorded' : 
-            (props.selectedRecordIdx === idx ? 'record selected' : 'record')}>
+            (props.selectedRecordIdx === idx ? 'record selected' : 'nonSelectableRecord')}>
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.myRecord[idx]}</div>
             <div className='possibleScore'>{props.turn === 1 && props.myRecord[idx] === '-' && idx !== 6 ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
