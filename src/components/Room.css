@@ -108,6 +108,10 @@
 .userInfo button:hover {
     color: white;
 }
+.userInfo button.notReady {
+    color: black
+}
+
 
 
 #menu {
@@ -250,6 +254,18 @@
 
     border-left: 5px rgba(0, 0, 0, 0) solid;
 }
+#gameArea .recordList .nonSelectableRecord {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    height: 42px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    border-left: 5px rgba(0, 0, 0, 0) solid;
+}
 #gameArea #myRecord .record:hover {
     background-color: rgba(30, 30, 30, 0.5);
     border-left: 5px greenyellow solid;
@@ -264,6 +280,15 @@
     font-size: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+#gameArea .recordList .nonSelectableRecord .recordName {
+    width: 100px
+}
+#gameArea .recordList .nonSelectableRecord .recordScore {
+    width: 50px;
+}
+#gameArea .recordList .nonSelectableRecord .possibleScore {
+    width: 50px;
 }
 #gameArea .recordList .recorded .recordName {
     width: 100px
@@ -311,6 +336,12 @@
     flex-direction: column;
 
     text-align: center;
+}
+#gameArea .playArea #win {
+    color: white;
+}
+#gameArea .playArea #lose {
+    color: black;
 }
 #gameArea #myArea {
     grid-area: myArea;
@@ -414,3 +445,4 @@
 #gameArea button.disable {
     color: rgba(0, 0, 0, 0.4);
 }
+
