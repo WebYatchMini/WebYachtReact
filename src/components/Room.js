@@ -464,7 +464,9 @@ function Room(props) {
                 setIsEnd(data.isEnded);
                 setIsWinner(data.winner);
                 if (data.winner === storeIsRoomOwner) increaseWinStore();
-                else increaseLoseStore();
+                else increaseLoseStore(handleGameEnd, 3500);
+                
+                setTimeout()
             }
             else {
                 setRound(data.turn);
