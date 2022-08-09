@@ -74,7 +74,7 @@ function GameArea(props) {
     const turnArray = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH',
                         '8TH', '9TH', '10TH', '11TH', '12TH', '13TH'];
     const phaseArray = ['1번째 주사위', '2번째 주사위', '3번째 주사위', '족보 선택 중']
-    const myRecordList = Array.from(recordArray).map((record, idx) => (
+    const myTurnMyRecordList = Array.from(recordArray).map((record, idx) => (
         <div className={props.myRecord[idx] !== '-' || idx === 6 ? 'recorded' : 
             (props.selectedRecordIdx === idx ? 'record selected' : 'record')}
             onClick={() => {
@@ -84,6 +84,14 @@ function GameArea(props) {
                 }
             }}
         >
+            <div className='recordName'>{record}</div>:
+            <div className='recordScore'>{props.myRecord[idx]}</div>
+            <div className='possibleScore'>{props.turn === 1 && props.myRecord[idx] === '-' && idx !== 6 ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
+        </div>
+    ))
+    const oppTurnMyRecordList = Array.from(recordArray).map((record, idx) => (
+        <div className={props.myRecord[idx] !== '-' || idx === 6 ? 'recorded' : 
+            (props.selectedRecordIdx === idx ? 'record selected' : 'record')}>
             <div className='recordName'>{record}</div>:
             <div className='recordScore'>{props.myRecord[idx]}</div>
             <div className='possibleScore'>{props.turn === 1 && props.myRecord[idx] === '-' && idx !== 6 ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
@@ -115,7 +123,7 @@ function GameArea(props) {
         <div className='content' id='gameArea'>
             <div className='test recordList' id='myRecord'>
                 <div className='recordHeader'>{props.storeNickname}</div>
-                {myRecordList}
+                {props.turn === 1 ? myTurnMyRecordList : oppTurnMyRecordList}
                 <div className='recordTotal'>
                     <div className='recordName'>TOTAL</div>:
                     <div className='recordScore'>{props.myTotalScore}</div>
@@ -131,10 +139,10 @@ function GameArea(props) {
             </div>
             <div className='test playArea' id='oppArea'>
                 <div id='oppSavedArea'>
-                    {oppSavedDiceList}
+                    {props.isEnd ? '' : oppSavedDiceList}
                 </div>
                 <div id='oppDiceArea'>
-                    {oppDiceList}
+                {props.isEnd ? (props.isWinner === props.isRoomOwner ? <div id='lose'>LOSE</div> : <div id='win'>WIN</div>) : oppDiceList}
                 </div>
             </div>
             <div className='test' id='infoArea'>
@@ -147,11 +155,11 @@ function GameArea(props) {
             </div>
             <div className='test playArea' id='myArea'>
                 <div id='myDiceArea'>
-                    {myDiceList}
+                {props.isEnd ? (props.isWinner === props.isRoomOwner ? <div id='win'>WIN</div> : <div id='lose'>LOSE</div>) : myDiceList}
                 </div>
                 <div id='mySubArea'>
                     <div id='mySavedArea'>
-                        {mySavedDiceList}
+                    {props.isEnd ?  <button onClick={props.handleGameEnd}>BACK</button> : mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
                         <button className={props.turn === 0 || props.phase === 3 ? 'disable' : 'able'} disabled={props.turn === 0 || props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
@@ -240,6 +248,8 @@ function Room(props) {
     const [turn, setTurn] = useState(0);
     const [phase, setPhase] = useState(0);
     const [round, setRound] = useState(1);
+    const [isEnd, setIsEnd] = useState(false);
+    const [isWinner, setIsWinner] = useState(-1);
 
     const saveDiceByIdx = (idx) => {
         let temp = myDice[idx];
@@ -255,7 +265,7 @@ function Room(props) {
         setSavedMyDice([...tempArr]);
         setMyDice([...myDice, temp]);
     }
-    const rollDice = () => {
+    const rollDice = () => {    
         /*
         보낼 데이터
         private ArrayList<Integer> keep;
@@ -446,40 +456,51 @@ function Room(props) {
                 private int p1Sum => 방장 데이터
                 private int p2Sum => 상대방 데이터
                 private int phase
+                private boolean isEnded
+                private int winner
             */
-            setRound(data.turn);
-            setPhase(data.phase);
-            setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
             
-            let other = storeIsRoomOwner === 1 ? 0 : 1;
-            let myList = Array.from(data.pick[storeIsRoomOwner]).map((value) => (value === -1 ? '-' : value));
-            let oppList = Array.from(data.pick[other]).map((value) => (value === -1 ? '-' : value));
-
-            setMyRecord([...myList]);
-            setOppRecord([...oppList]);
-            if (storeIsRoomOwner) {
-                setMyTotalScore(data.p1Sum);
-                setOppTotalScore(data.p2Sum);
+            if (data.isEnded) {
+                setIsEnd(data.isEnded);
+                setIsWinner(data.winner);
+                if (data.winner === storeIsRoomOwner) increaseWinStore();
+                else increaseLoseStore();
             }
             else {
-                setMyTotalScore(data.p2Sum);
-                setOppTotalScore(data.p1Sum);
-            }
+                setRound(data.turn);
+                setPhase(data.phase);
+                setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
 
-            if (data.isOwnersTurn === storeIsRoomOwner) {
-                setMyDice([...data.dices]);
-                setOppDice([]);
-                setSavedOppDice([])
+                let other = storeIsRoomOwner === 1 ? 0 : 1;
+                let myList = Array.from(data.pick[storeIsRoomOwner]).map((value) => (value === -1 ? '-' : value));
+                let oppList = Array.from(data.pick[other]).map((value) => (value === -1 ? '-' : value));
 
-                setPickAvailability([...data.pickAvailabilityScore]);
-            }
-            else {
-                setMyDice([]);
-                setSavedMyDice([]);
-                setOppDice([...data.dices]);
-                setSavedOppDice([...data.keptDices]);
+                setMyRecord([...myList]);
+                setOppRecord([...oppList]);
+                if (storeIsRoomOwner) {
+                    setMyTotalScore(data.p1Sum);
+                    setOppTotalScore(data.p2Sum);
+                }
+                else {
+                    setMyTotalScore(data.p2Sum);
+                    setOppTotalScore(data.p1Sum);
+                }
 
-                setPickAvailability([]);
+                if (data.isOwnersTurn === storeIsRoomOwner) {
+                    setMyDice([...data.dices]);
+                    setOppDice([]);
+                    setSavedOppDice([])
+
+                    setPickAvailability([...data.pickAvailabilityScore]);
+                }
+                else {
+                    setMyDice([]);
+                    setSavedMyDice([]);
+                    setOppDice([...data.dices]);
+                    setSavedOppDice([...data.keptDices]);
+
+                    setPickAvailability([]);
+                }
             }
         });
     };
@@ -501,6 +522,26 @@ function Room(props) {
         }
     }, [isReady]);
     // 콜백함수 바꿔볼것, useEffect 등록 당시에는 client가 안만들어져 있는건지, publish가 undefined라
+    // => socketStatus를 둬서 해결
+
+    const handleGameEnd = () => {
+        setGame(false);
+        setMyDice([]);
+        setOppDice([]);
+        setSavedMyDice([]);
+        setSavedOppDice([]);
+        setPickAvailability([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        setMyRecord(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+        setOppRecord(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+        setSelectedRecordIdx(-1);
+        setMyTotalScore(0);
+        setOppTotalScore(0);
+        setTurn(0);
+        setPhase(0);
+        setRound(1);
+        setIsEnd(false);
+        setIsWinner(-1);
+    }
 
     return(
         <div className='common'>
@@ -540,6 +581,9 @@ function Room(props) {
                 setSelectedRecordIdx={setSelectedRecordIdx}
                 myTotalScore={myTotalScore}
                 oppTotalScore={oppTotalScore}
+                isEnd={isEnd}
+                isWinner={isWinner}
+                handleGameEnd={handleGameEnd}
                 />
                 :
                 <ReadyArea
