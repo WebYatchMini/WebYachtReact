@@ -163,7 +163,7 @@ function GameArea(props) {
                     </div>
                     <div id='myControlArea'>
                         <button className={props.turn === 0 || props.phase === 3 ? 'disable' : 'able'} disabled={props.turn === 0 || props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
-                        <button className={props.turn === 0 ? 'disable' : 'able'} disabled={props.turn === 0  ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
+                        <button className={props.turn === 0 ? 'disable' : 'able'} disabled={props.turn === 0 ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
                     </div>
                 </div>
             </div>
@@ -287,15 +287,17 @@ function Room(props) {
         private String roomCode;
         private ArrayList<Boolean> picked;
         */
-        const pickedArr = Array(14).fill(false);
-        pickedArr[selectedRecordIdx] = true;
-        client.current.publish({
-            destination: "/pub/game/room/pick",
-            body: JSON.stringify({
-                picked: pickedArr,
-                roomCode: storeRoomCode,
+        if (selectedRecordIdx !== -1) {
+            const pickedArr = Array(14).fill(false);
+            pickedArr[selectedRecordIdx] = true;
+            client.current.publish({
+                destination: "/pub/game/room/pick",
+                body: JSON.stringify({
+                    picked: pickedArr,
+                    roomCode: storeRoomCode,
+                })
             })
-        })
+        }
     }
 
     const client = useRef({});
