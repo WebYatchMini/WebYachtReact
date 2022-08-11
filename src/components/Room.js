@@ -467,6 +467,10 @@ function Room(props) {
                 setIsWinner(data.winner);
                 setPhase(4);
                 setRound(13);
+                setMyDice([]);
+                setOppDice([]);
+                setSavedMyDice([]);
+                setSavedOppDice([]);
                 if (data.winner === storeIsRoomOwner) increaseWinStore();
                 else increaseLoseStore();
                 
