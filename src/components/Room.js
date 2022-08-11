@@ -162,8 +162,8 @@ function GameArea(props) {
                     {props.isEnd ?  <button onClick={props.handleGameEnd}>BACK TO LOBBY</button> : mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
-                        <button className={props.turn === 0 || props.phase === 3 ? 'disable' : 'able'} disabled={props.turn === 0 || props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
-                        <button className={props.turn === 0 ? 'disable' : 'able'} disabled={props.turn === 0 ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
+                        <button className={props.isEnd || props.turn === 0 || props.phase === 3 ? 'disable' : 'able'} disabled={props.isEnd || props.turn === 0 || props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
+                        <button className={props.isEnd || props.turn === 0 ? 'disable' : 'able'} disabled={props.isEnd || props.turn === 0 ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
                     </div>
                 </div>
             </div>
