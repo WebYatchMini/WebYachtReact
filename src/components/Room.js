@@ -458,12 +458,12 @@ function Room(props) {
                 private int p1Sum => 방장 데이터
                 private int p2Sum => 상대방 데이터
                 private int phase
-                private boolean isEnded
+                private boolean ended
                 private int winner
             */
             
-            if (data.isEnded) {
-                setIsEnd(data.isEnded);
+            if (data.ended) {
+                setIsEnd(data.ended);
                 setIsWinner(data.winner);
                 setPhase(4);
                 setRound(13);
