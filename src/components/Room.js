@@ -72,8 +72,8 @@ function GameArea(props) {
                         'Choice', '3 of a kind', '4 of a kind', 'Full House', 
                         'S.Straight', 'L.Straight', 'Yacht'];
     const turnArray = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH',
-                        '8TH', '9TH', '10TH', '11TH', '12TH', '13TH'];
-    const phaseArray = ['1번째 주사위', '2번째 주사위', '3번째 주사위', '족보 선택 중']
+                        '8TH', '9TH', '10TH', '11TH', '12TH', '13TH', '-'];
+    const phaseArray = ['1번째 주사위', '2번째 주사위', '3번째 주사위', '족보 선택 중', '종료']
     const myTurnMyRecordList = Array.from(recordArray).map((record, idx) => (
         <div className={props.myRecord[idx] !== '-' || idx === 6 ? 'recorded' : 
             (props.selectedRecordIdx === idx ? 'record selected' : 'record')}
@@ -146,10 +146,10 @@ function GameArea(props) {
                 </div>
             </div>
             <div className='test' id='infoArea'>
-                <div id='round'>{turnArray[props.round - 1]} ROUND</div>
+                <div id='round'>{props.isEnd ? '-' : turnArray[props.round - 1] + 'ROUND'}</div>
                 <div id='turn'>
-                    <div>{props.turn ? '나의 턴' : '상대 턴'}</div>
-                    <div>{props.turn ? <i className="bi bi-arrow-down"></i> : <i className="bi bi-arrow-up"></i>}</div>
+                    <div>{props.isEnd ? '-' : (props.turn ? '나의 턴' : '상대 턴')}</div>
+                    <div>{props.isEnd ? '' : (props.turn ? <i className="bi bi-arrow-down"></i> : <i className="bi bi-arrow-up"></i>)}</div>
                 </div>
                 <div id='phase'>{phaseArray[props.phase]}</div>
             </div>
@@ -159,7 +159,7 @@ function GameArea(props) {
                 </div>
                 <div id='mySubArea'>
                     <div id='mySavedArea'>
-                    {props.isEnd ?  <button onClick={props.handleGameEnd}>BACK</button> : mySavedDiceList}
+                    {props.isEnd ?  <button onClick={props.handleGameEnd}>BACK TO LOBBY</button> : mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
                         <button className={props.turn === 0 || props.phase === 3 ? 'disable' : 'able'} disabled={props.turn === 0 || props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
@@ -465,6 +465,8 @@ function Room(props) {
             if (data.isEnded) {
                 setIsEnd(data.isEnded);
                 setIsWinner(data.winner);
+                setPhase(4);
+                setRound(13);
                 if (data.winner === storeIsRoomOwner) increaseWinStore();
                 else increaseLoseStore();
                 
