@@ -473,19 +473,17 @@ function Room(props) {
                 setSavedOppDice([]);
                 if (data.winner === storeIsRoomOwner) {
                     increaseWinStore();
-                    setOpponentInfo({
-                        nickname: opponentInfo.nickname,
-                        win: opponentInfo.win,
-                        lose: opponentInfo.lose + 1
-                    })
+                    setOpponentInfo((prev) => ({
+                        ...prev,
+                        win: prev.win + 1
+                    }));
                 }
                 else {
                     increaseLoseStore(); 
-                    setOpponentInfo({
-                        nickname: opponentInfo.nickname,
-                        win: opponentInfo.win + 1,
-                        lose: opponentInfo.lose
-                    })
+                    setOpponentInfo((prev) => ({
+                        ...prev,
+                        lose: prev.lose + 1
+                    }));
                 }
                 
                 setTimeout(handleGameEnd, 10000)
