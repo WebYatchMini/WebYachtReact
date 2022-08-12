@@ -142,11 +142,11 @@ function GameArea(props) {
                     {props.isEnd ? '' : oppSavedDiceList}
                 </div>
                 <div id='oppDiceArea'>
-                {props.isEnd ? (props.isWinner === props.isRoomOwner ? <div id='lose'>LOSE</div> : <div id='win'>WIN</div>) : oppDiceList}
+                {props.isEnd ? (props.isWinner === props.storeIsRoomOwner ? <div id='lose'>LOSE</div> : <div id='win'>WIN</div>) : oppDiceList}
                 </div>
             </div>
             <div className='test' id='infoArea'>
-                <div id='round'>{props.isEnd ? '-' : turnArray[props.round - 1] + 'ROUND'}</div>
+                <div id='round'>{props.isEnd ? '-' : turnArray[props.round - 1] + ' ROUND'}</div>
                 <div id='turn'>
                     <div>{props.isEnd ? '-' : (props.turn ? '나의 턴' : '상대 턴')}</div>
                     <div>{props.isEnd ? '' : (props.turn ? <i className="bi bi-arrow-down"></i> : <i className="bi bi-arrow-up"></i>)}</div>
@@ -155,7 +155,7 @@ function GameArea(props) {
             </div>
             <div className='test playArea' id='myArea'>
                 <div id='myDiceArea'>
-                {props.isEnd ? (props.isWinner === props.isRoomOwner ? <div id='win'>WIN</div> : <div id='lose'>LOSE</div>) : myDiceList}
+                {props.isEnd ? (props.isWinner === props.storeIsRoomOwner ? <div id='win'>WIN</div> : <div id='lose'>LOSE</div>) : myDiceList}
                 </div>
                 <div id='mySubArea'>
                     <div id='mySavedArea'>
@@ -474,15 +474,17 @@ function Room(props) {
                 if (data.winner === storeIsRoomOwner) {
                     increaseWinStore();
                     setOpponentInfo({
-                        ...opponentInfo,
+                        nickname: opponentInfo.nickname,
+                        win: opponentInfo.win,
                         lose: opponentInfo.lose + 1
                     })
                 }
                 else {
                     increaseLoseStore(); 
                     setOpponentInfo({
-                        ...opponentInfo,
-                        win: opponentInfo.win + 1
+                        nickname: opponentInfo.nickname,
+                        win: opponentInfo.win + 1,
+                        lose: opponentInfo.lose
                     })
                 }
                 
@@ -492,6 +494,7 @@ function Room(props) {
                 setRound(data.turn);
                 setPhase(data.phase);
                 setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
+                setSelectedRecordIdx(-1);
 
                 let other = storeIsRoomOwner === 1 ? 0 : 1;
                 let myList = Array.from(data.pick[storeIsRoomOwner]).map((value) => (value === -1 ? '-' : value));
