@@ -428,7 +428,7 @@ function Room(props) {
                         ready: true/false
                         준비 상태 교환 데이터
                      */
-                    if (storeIsRoomOwner) setOpponentState(data.ready);
+                    setOpponentState(data.ready);
                     break;
                 case 2:
                     /*
