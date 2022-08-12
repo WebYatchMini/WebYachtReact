@@ -609,6 +609,7 @@ function Room(props) {
                 isEnd={isEnd}
                 isWinner={isWinner}
                 handleGameEnd={handleGameEnd}
+                storeIsRoomOwner={storeIsRoomOwner}
                 />
                 :
                 <ReadyArea
