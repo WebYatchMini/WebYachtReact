@@ -475,14 +475,14 @@ function Room(props) {
                     increaseWinStore();
                     setOpponentInfo((prev) => ({
                         ...prev,
-                        win: prev.win + 1
+                        lose: prev.lose + 1
                     }));
                 }
                 else {
                     increaseLoseStore(); 
                     setOpponentInfo((prev) => ({
                         ...prev,
-                        lose: prev.lose + 1
+                        win: prev.win + 1
                     }));
                 }
                 
