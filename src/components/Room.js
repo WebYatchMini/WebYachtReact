@@ -471,10 +471,22 @@ function Room(props) {
                 setOppDice([]);
                 setSavedMyDice([]);
                 setSavedOppDice([]);
-                if (data.winner === storeIsRoomOwner) increaseWinStore();
-                else increaseLoseStore();
+                if (data.winner === storeIsRoomOwner) {
+                    increaseWinStore();
+                    setOpponentInfo({
+                        ...opponentInfo,
+                        lose: opponentInfo.lose + 1
+                    })
+                }
+                else {
+                    increaseLoseStore(); 
+                    setOpponentInfo({
+                        ...opponentInfo,
+                        win: opponentInfo.win + 1
+                    })
+                }
                 
-                setTimeout(handleGameEnd, 3500)
+                setTimeout(handleGameEnd, 10000)
             }
             else {
                 setRound(data.turn);
@@ -488,7 +500,7 @@ function Room(props) {
                 setMyRecord([...myList]);
                 setOppRecord([...oppList]);
                 if (storeIsRoomOwner) {
-                    setMyTotalScore(data.p1Sum);
+                    setMyTotalScore(data.p1Sum);    
                     setOppTotalScore(data.p2Sum);
                 }
                 else {
