@@ -55,7 +55,7 @@ function ReadyArea(props) {
                     <div>{props.opponentInfo.nickname}</div>
                     <div>WIN: {props.opponentInfo.win}</div>
                     <div>LOSE: {props.opponentInfo.lose}</div>
-                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <div className='ready'> READY </div> : <div className='notReady'> READY </div>) : <div> HOST </div>}
+                    {props.storeIsRoomOwner === 1 ? ( props.opponentState ? <div className='ready'> READY </div> : <div className='notReady'> READY </div>) : <div className='host'> HOST </div>}
                 </div>
             </div>
             <div className='test' id='menu'>
@@ -155,15 +155,17 @@ function GameArea(props) {
             </div>
             <div className='test playArea' id='myArea'>
                 <div id='myDiceArea'>
-                {props.isEnd ? (props.isWinner === props.storeIsRoomOwner ? <div id='win'>WIN</div> : <div id='lose'>LOSE</div>) : myDiceList}
+                    {props.isEnd ? '' : <div className='labelArea hand'>HAND</div>}
+                    {props.isEnd ? (props.isWinner === props.storeIsRoomOwner ? <div id='win'>WIN</div> : <div id='lose'>LOSE</div>) : myDiceList}
                 </div>
                 <div id='mySubArea'>
                     <div id='mySavedArea'>
-                    {props.isEnd ?  <button onClick={props.handleGameEnd}>BACK TO LOBBY</button> : mySavedDiceList}
+                        {props.isEnd ? '' : <div className='labelArea save'>SAVE</div>}
+                        {props.isEnd ?  <button onClick={props.handleGameEnd}>BACK TO LOBBY</button> : mySavedDiceList}
                     </div>
                     <div id='myControlArea'>
-                        <button className={props.isEnd || props.turn === 0 || props.phase === 3 ? 'disable' : 'able'} disabled={props.isEnd || props.turn === 0 || props.phase === 3 ? true : false} id='rollDice' onClick={props.rollDice}>Roll dice</button>
-                        <button className={props.isEnd || props.turn === 0 ? 'disable' : 'able'} disabled={props.isEnd || props.turn === 0 ? true : false} id='recordSelect' onClick={props.selectRecord}>Select</button>
+                        <button className={props.isEnd || props.turn === 0 || props.phase === 3 || props.myDice.length === 0 ? 'disable' : 'able'} disabled={props.isEnd || props.turn === 0 || props.phase === 3 || props.myDice.length === 0  ? true : false} id='rollDice' onClick={props.rollDice}>Roll Dice in HAND</button>
+                        <button className={props.isEnd || props.turn === 0 ? 'disable' : 'able'} disabled={props.isEnd || props.turn === 0 ? true : false} id='recordSelect' onClick={props.selectRecord}>Select Record</button>
                     </div>
                 </div>
             </div>

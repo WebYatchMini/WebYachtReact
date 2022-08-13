@@ -94,9 +94,14 @@
 }
 .userInfo .ready {
     color: white;
+    font-size: 36px;
 }
 .userInfo .notReady {
     color: rgb(70, 70, 70);
+    font-size: 36px;
+}
+.userInfo .host {
+    font-size: 36px;
 }
 
 .userInfo button {
@@ -104,6 +109,7 @@
     margin-bottom: 15px;
     background: rgba(0, 0, 0, 0);
     border: 0px;
+    font-size: 36px;
 }
 .userInfo button:hover {
     color: white;
@@ -347,6 +353,11 @@
     grid-area: myArea;
     color: white
 }
+#gameArea #myArea .labelArea {
+    color: black;
+    font-size: 24px;
+    display: flex;
+}
 #gameArea #myArea #myDiceArea {
     flex-basis: 60%;
     margin: 10px 10px 10px 10px;
@@ -357,6 +368,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+#gameArea #myArea #myDiceArea .hand {
+    position: fixed;
+    left: 550px;
+    top: 605px;
+}
+#gameArea #myArea #mySubArea .save {
+    position: fixed;
+    left: 550px;
+    top: 865px;
 }
 #gameArea #myArea #mySubArea {
     flex-basis: 40%;
