@@ -85,7 +85,7 @@ function GameArea(props) {
             }}
         >
             <div className='recordName'>{record}</div>:
-            <div className='recordScore'>{props.myRecord[idx]}</div>
+            <div className='recordScore'>{idx !== 6 ? props.myRecord[idx] : (props.myRecord[idx] === 0 ? '(' + props.myUntilBonus + ' left)' : props.myRecord[idx])}</div>
             <div className='possibleScore'>{props.turn === 1 && props.myRecord[idx] === '-' && idx !== 6 ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
         </div>
     ))
@@ -93,7 +93,7 @@ function GameArea(props) {
         <div className={props.myRecord[idx] !== '-' || idx === 6 ? 'recorded' : 
             (props.selectedRecordIdx === idx ? 'record selected' : 'nonSelectableRecord')}>
             <div className='recordName'>{record}</div>:
-            <div className='recordScore'>{props.myRecord[idx]}</div>
+            <div className='recordScore'>{idx !== 6 ? props.myRecord[idx] : (props.myRecord[idx] === 0 ? '(' + props.myUntilBonus + ' left)' : props.myRecord[idx])}</div>
             <div className='possibleScore'>{props.turn === 1 && props.myRecord[idx] === '-' && idx !== 6 ? ('(' + props.pickAvailability[idx] + ')') : ''}</div>
         </div>
     ))
@@ -174,7 +174,6 @@ function GameArea(props) {
 }
 /*
 남은일 
-13라운드 이후 최종점수에 따른 승패
 */
 
 function ChatArea(props) {
@@ -245,6 +244,7 @@ function Room(props) {
     const [myRecord, setMyRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [oppRecord, setOppRecord] = useState(['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
     const [selectedRecordIdx, setSelectedRecordIdx] = useState(-1);
+    const [myUntilBonus, setMyUntilBonus] = useState(0);
     const [myTotalScore, setMyTotalScore] = useState(0);
     const [oppTotalScore, setOppTotalScore] = useState(0);
     const [turn, setTurn] = useState(0);
@@ -462,6 +462,8 @@ function Room(props) {
                 private int phase
                 private boolean ended
                 private int winner
+                private int p1untilBonus => 방장 1~6 63점까지 남은 점수
+                private int p2untilBonus => 상대방 1~6 //
             */
             
             if (data.ended) {
@@ -503,10 +505,12 @@ function Room(props) {
                 setMyRecord([...myList]);
                 setOppRecord([...oppList]);
                 if (storeIsRoomOwner) {
+                    setMyUntilBonus(data.p1untilBonus);
                     setMyTotalScore(data.p1Sum);    
                     setOppTotalScore(data.p2Sum);
                 }
                 else {
+                    setMyUntilBonus(data.p2untilBonus);
                     setMyTotalScore(data.p2Sum);
                     setOppTotalScore(data.p1Sum);
                 }
@@ -517,6 +521,7 @@ function Room(props) {
                     setSavedOppDice([])
 
                     setPickAvailability([...data.pickAvailabilityScore]);
+                    setTimeout(handleRoundTimeOut, 30000)
                 }
                 else {
                     setMyDice([]);
@@ -568,6 +573,16 @@ function Room(props) {
         setIsWinner(-1);
     }
 
+    const handleRoundTimeOut = () => {
+        client.current.publish({
+            destination: "/pub/game/room/timeout",
+            body: JSON.stringify({
+                sender: storeNickname,
+                roomCode: storeRoomCode
+            })
+        })
+    }
+
     return(
         <div className='common'>
             {(() => {
@@ -604,6 +619,7 @@ function Room(props) {
                 selectRecord={selectRecord}
                 selectedRecordIdx={selectedRecordIdx}
                 setSelectedRecordIdx={setSelectedRecordIdx}
+                myUntilBonus={myUntilBonus}
                 myTotalScore={myTotalScore}
                 oppTotalScore={oppTotalScore}
                 isEnd={isEnd}
