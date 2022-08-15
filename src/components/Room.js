@@ -530,10 +530,10 @@ function Room(props) {
                     setSavedOppDice([])
 
                     setPickAvailability([...data.pickAvailabilityScore]);
-                    if (roundTimerId.currenr === null) roundTimerId.current = setTimeout(handleRoundTimeOut, 30000)
+                    if (roundTimerId.currenr === null) roundTimerId.current = setTimeout(handleRoundTimeOut, 31000)
                     else {
                         clearTimeout(roundTimerId.current);
-                        roundTimerId.current = setTimeout(handleRoundTimeOut, 30000)
+                        roundTimerId.current = setTimeout(handleRoundTimeOut, 31000)
                     }
                 }
                 else {
