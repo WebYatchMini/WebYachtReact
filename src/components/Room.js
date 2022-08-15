@@ -295,6 +295,8 @@ function Room(props) {
         */
         clearTimeout(roundTimerId.current);
         clearTimeout(timerCounterId.current);
+        roundTimerId.current = null;
+        timerCounterId.current = null;
         if (selectedRecordIdx !== -1) {
             const pickedArr = Array(14).fill(false);
             pickedArr[selectedRecordIdx] = true;
@@ -528,7 +530,11 @@ function Room(props) {
                     setSavedOppDice([])
 
                     setPickAvailability([...data.pickAvailabilityScore]);
-                    roundTimerId.current = setTimeout(handleRoundTimeOut, 30000)
+                    if (roundTimerId.currenr === null) roundTimerId.current = setTimeout(handleRoundTimeOut, 30000)
+                    else {
+                        clearTimeout(roundTimerId.current);
+                        roundTimerId.current = setTimeout(handleRoundTimeOut, 30000)
+                    }
                 }
                 else {
                     setMyDice([]);
@@ -538,7 +544,12 @@ function Room(props) {
 
                     setPickAvailability([]);
                 }
-                timerCounterId.current = setTimeout(handleTimerCount, 1000);
+
+                if (timerCounterId.currenr === null) timerCounterId.current = setTimeout(handleTimerCount, 1000)
+                else {
+                    clearTimeout(timerCounterId.current);
+                    timerCounterId.current = setTimeout(handleTimerCount, 1000)
+                }
             }
         });
     };
