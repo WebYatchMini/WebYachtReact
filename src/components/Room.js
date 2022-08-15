@@ -151,6 +151,7 @@ function GameArea(props) {
                     <div>{props.isEnd ? '-' : (props.turn ? '나의 턴' : '상대 턴')}</div>
                     <div>{props.isEnd ? '' : (props.turn ? <i className="bi bi-arrow-down"></i> : <i className="bi bi-arrow-up"></i>)}</div>
                 </div>
+                <div id='timer'>{props.timer}</div>
                 <div id='phase'>{phaseArray[props.phase]}</div>
             </div>
             <div className='test playArea' id='myArea'>
@@ -252,6 +253,9 @@ function Room(props) {
     const [round, setRound] = useState(1);
     const [isEnd, setIsEnd] = useState(false);
     const [isWinner, setIsWinner] = useState(-1);
+    const [timer, setTimer] = useState(0);
+    const roundTimerId = useRef(null);
+    const timerCounterId = useRef(null);
 
     const saveDiceByIdx = (idx) => {
         let temp = myDice[idx];
@@ -289,6 +293,8 @@ function Room(props) {
         private String roomCode;
         private ArrayList<Boolean> picked;
         */
+        clearTimeout(roundTimerId.current);
+        clearTimeout(timerCounterId.current);
         if (selectedRecordIdx !== -1) {
             const pickedArr = Array(14).fill(false);
             pickedArr[selectedRecordIdx] = true;
@@ -472,7 +478,7 @@ function Room(props) {
                 setPhase(4);
                 setRound(13);
                 setMyDice([]);
-                setOppDice([]);
+                setOppDice([]);     
                 setSavedMyDice([]);
                 setSavedOppDice([]);
                 if (data.winner === storeIsRoomOwner) {
@@ -497,6 +503,7 @@ function Room(props) {
                 setPhase(data.phase);
                 setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
                 setSelectedRecordIdx(-1);
+                setTimer(30);
 
                 let other = storeIsRoomOwner === 1 ? 0 : 1;
                 let myList = Array.from(data.pick[storeIsRoomOwner]).map((value) => (value === -1 ? '-' : value));
@@ -521,7 +528,7 @@ function Room(props) {
                     setSavedOppDice([])
 
                     setPickAvailability([...data.pickAvailabilityScore]);
-                    setTimeout(handleRoundTimeOut, 30000)
+                    roundTimerId.current = setTimeout(handleRoundTimeOut, 30000)
                 }
                 else {
                     setMyDice([]);
@@ -531,6 +538,7 @@ function Room(props) {
 
                     setPickAvailability([]);
                 }
+                timerCounterId.current = setTimeout(handleTimerCount, 1000);
             }
         });
     };
@@ -583,6 +591,16 @@ function Room(props) {
         })
     }
 
+    const handleTimerCount = () => {
+        setTimer(prev => prev - 1);
+    }
+    useEffect(() => {
+        timerCounterId.current = setTimeout(handleTimerCount, 1000);
+        if (timer === 0) clearTimeout(timerCounterId.current);
+
+        return () => clearTimeout(timerCounterId.current);
+    }, [timer])
+
     return(
         <div className='common'>
             {(() => {
@@ -626,6 +644,7 @@ function Room(props) {
                 isWinner={isWinner}
                 handleGameEnd={handleGameEnd}
                 storeIsRoomOwner={storeIsRoomOwner}
+                timer={timer}
                 />
                 :
                 <ReadyArea

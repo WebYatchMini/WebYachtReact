@@ -409,21 +409,28 @@
 }
 
 #gameArea #infoArea #round{
-    flex-basis: 33%;
+    flex-basis: 25%;
     
     display: flex;
     justify-content: center;
     align-items: center;
 }
 #gameArea #infoArea #turn {
-    flex-basis: 33%;
+    flex-basis: 25%;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#gameArea #infoArea #timer {
+    flex-basis: 25%;
     
     display: flex;
     justify-content: center;
     align-items: center;
 }
 #gameArea #infoArea #phase{
-    flex-basis: 33%;
+    flex-basis: 25%;
 
     display: flex;
     justify-content: center;
