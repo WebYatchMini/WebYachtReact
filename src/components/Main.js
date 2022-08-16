@@ -156,6 +156,8 @@ function HelpModal(props) {
                             <img src='/assets/2.PNG'/>
                             <img src='/assets/3.PNG'/>
                             <img src='/assets/4.PNG'/>
+                            {/* 족보 설명 관련 추가할 것, 1~6 + 보너스 1페이지 */}
+                            {/* 특수족보 1페이지 */}
                         </div>
                     </div>
                     <hr></hr>
@@ -211,9 +213,13 @@ class Main extends Component {
         roomArray: [],
         helpModalShow: false,
     }
+    intvId = createRef();
     componentDidMount() {
         this.handleRefresh();
-        // setInterval(this.handleRefresh, 10000);
+        this.intvId.current = setInterval(this.handleRefresh, 10000);
+    }
+    componentWillUnmount() {
+        clearInterval(this.intvId.current);
     }
     handlePwCheck = () => {
         this.setState({

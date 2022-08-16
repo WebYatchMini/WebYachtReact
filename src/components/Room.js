@@ -473,7 +473,15 @@ function Room(props) {
                 private int p1untilBonus => 방장 1~6 63점까지 남은 점수
                 private int p2untilBonus => 상대방 1~6 //
             */
-            
+            setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
+            setSelectedRecordIdx(-1);
+
+            let other = storeIsRoomOwner === 1 ? 0 : 1;
+            let myList = Array.from(data.pick[storeIsRoomOwner]).map((value) => (value === -1 ? '-' : value));
+            let oppList = Array.from(data.pick[other]).map((value) => (value === -1 ? '-' : value));
+            setMyRecord([...myList]);
+            setOppRecord([...oppList]);
+
             if (data.ended) {
                 setIsEnd(data.ended);
                 setIsWinner(data.winner);
@@ -503,16 +511,13 @@ function Room(props) {
             else {
                 setRound(data.turn);
                 setPhase(data.phase);
-                setTurn(data.isOwnersTurn === storeIsRoomOwner ? 1 : 0);
-                setSelectedRecordIdx(-1);
                 setTimer(30);
+                if (timerCounterId.currenr === null) timerCounterId.current = setTimeout(handleTimerCount, 1000)
+                else {
+                    clearTimeout(timerCounterId.current);
+                    timerCounterId.current = setTimeout(handleTimerCount, 1000)
+                }
 
-                let other = storeIsRoomOwner === 1 ? 0 : 1;
-                let myList = Array.from(data.pick[storeIsRoomOwner]).map((value) => (value === -1 ? '-' : value));
-                let oppList = Array.from(data.pick[other]).map((value) => (value === -1 ? '-' : value));
-
-                setMyRecord([...myList]);
-                setOppRecord([...oppList]);
                 if (storeIsRoomOwner) {
                     setMyUntilBonus(data.p1untilBonus);
                     setMyTotalScore(data.p1Sum);    
@@ -543,12 +548,6 @@ function Room(props) {
                     setSavedOppDice([...data.keptDices]);
 
                     setPickAvailability([]);
-                }
-
-                if (timerCounterId.currenr === null) timerCounterId.current = setTimeout(handleTimerCount, 1000)
-                else {
-                    clearTimeout(timerCounterId.current);
-                    timerCounterId.current = setTimeout(handleTimerCount, 1000)
                 }
             }
         });
