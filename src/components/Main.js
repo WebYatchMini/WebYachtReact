@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { Component, useState, useRef, useEffect, createRef } from 'react'
 import { connect } from 'react-redux';
 import { Navigate, useNavigate } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal'
@@ -98,7 +98,7 @@ function JoinFailModal(props) {
     return (
         <Modal
         {...props}
-        size='lg'
+        size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
         >
@@ -117,6 +117,87 @@ function JoinFailModal(props) {
     )
 }
 
+function HelpModal(props) {
+    const [imgIdx, setImgIdx] = useState(0);
+    const imgs = useRef(null);
+    const comments = useRef(null);
+
+    const handleMoveLeft = () => {
+        if (imgIdx !== 0) setImgIdx(prev => prev - 1);
+    }
+    const handleMoveRight = () => {
+        if (imgIdx !== 3) setImgIdx(prev => prev + 1);
+    }
+    useEffect(() => {
+        imgs.current = document.getElementById("imgs");
+        comments.current = document.getElementById("comments")
+        if (imgs.current !== null && comments !== null) {
+            imgs.current.style.transform = `translateX(-${imgIdx * 1122}px)`;
+            comments.current.style.transform = `translateY(-${imgIdx * 170}px)`;
+        }
+    }, [imgIdx]) 
+
+
+    return (
+        <Modal
+        {...props}
+        size='xl'
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        >
+            <Modal.Header>
+                <h4>HELP</h4>
+            </Modal.Header>
+            <Modal.Body>
+                <div id='helpContainer'>
+                    <div id='imgFrame'>
+                        <div id='imgs'>
+                            <img src='/assets/1.PNG'/>
+                            <img src='/assets/2.PNG'/>
+                            <img src='/assets/3.PNG'/>
+                            <img src='/assets/4.PNG'/>
+                        </div>
+                    </div>
+                    <hr></hr>
+                    <div id='helpCommentFrame'>
+                        <div id='comments'>
+                            <div className='comment'>
+                                1: 준비 버튼입니다. 해당 버튼을 눌러 준비를 할 수 있습니다
+                            </div>
+                            <div className='comment'>
+                                1: 상대방이 준비 했음을 의미합니다.<br/>
+                                2: 상대방이 준비 완료시, 해당 버튼을 눌러 시작할 수 있습니다.
+                            </div>
+                            <div className='comment'>
+                                1: 현재 굴릴 것으로 선택한 주사위 목록입니다.<br/>
+                                2: 전체 주사위 중 굴릴 주사위 목록에서 제외한 주사위 목록입니다.<br/>
+                                3: 해당 버튼을 눌러 선택한 주사위들을 다시 굴립니다.
+                            </div>
+                            <div className='comment'>
+                                1: 점수 현황을 알리는 곳입니다. 점수가 기록되어 있지 않으면 우측의 괄호를 통해, 현재 주사위를 통해 얻을 수 있는 점수를 계산하여 보여줍니다<br/>
+                                2: 기록하기로 선택한 족보입니다. 우측 괄호 내에 계산된 점수만큼 해당 족보에 기록됩니다.<br/>
+                                3: 선택한 족보에 점수를 기록합니다
+                            </div>
+                        </div>
+                    </div>
+                    <hr></hr>
+                    <div id='helpControl'>
+                        <button onClick={handleMoveLeft}><i className="bi bi-caret-left-fill"></i></button>
+                        <div>{imgIdx+1} / 6</div>
+                        <button onClick={handleMoveRight}><i className="bi bi-caret-right-fill"></i></button>
+                    </div>
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={() => {
+                    setImgIdx(0);
+                    props.onHide();
+                    }}>BACK</Button>
+            </Modal.Footer>
+        </Modal>
+    )
+}
+
 class Main extends Component {
     state = {
         CreateRoomTitle: '',
@@ -128,11 +209,11 @@ class Main extends Component {
         JoinRoomPwd: '',
         joinFailModalShow: false,
         roomArray: [],
+        helpModalShow: false,
     }
-    
     componentDidMount() {
         this.handleRefresh();
-        setTimeout(this.handleRefresh, 10000);
+        // setInterval(this.handleRefresh, 10000);
     }
     handlePwCheck = () => {
         this.setState({
@@ -287,6 +368,14 @@ class Main extends Component {
                 {(() => {
                     if (!storeLogin) return <Navigate to='/login' replace={true}/>
                 })()}
+                <HelpModal
+                show={this.state.helpModalShow}
+                onHide={() => {
+                    this.setState({
+                        helpModalShow: false
+                    })
+                }}
+                />
                 <CreateRoomModal 
                 show={this.state.CreateModalShow}
                 pwCheck={this.state.CreatePwCheck}
@@ -384,7 +473,11 @@ class Main extends Component {
                                 // window.location.href = '/login';
                             }}
                             ><i className="bi bi-box-arrow-right"></i> LOGOUT</button></li>
-                            <li><button><i className="bi bi-question-circle-fill"></i> HELP</button></li>
+                            <li><button onClick={() => {
+                                this.setState({
+                                    helpModalShow: true,
+                                })
+                            }}><i className="bi bi-question-circle-fill"></i> HELP</button></li>
                         </ul>
                     </div>    
                 </div>
