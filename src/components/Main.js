@@ -126,7 +126,7 @@ function HelpModal(props) {
         if (imgIdx !== 0) setImgIdx(prev => prev - 1);
     }
     const handleMoveRight = () => {
-        if (imgIdx !== 3) setImgIdx(prev => prev + 1);
+        if (imgIdx !== 6) setImgIdx(prev => prev + 1);
     }
     useEffect(() => {
         imgs.current = document.getElementById("imgs");
@@ -156,8 +156,9 @@ function HelpModal(props) {
                             <img src='/assets/2.PNG'/>
                             <img src='/assets/3.PNG'/>
                             <img src='/assets/4.PNG'/>
-                            {/* 족보 설명 관련 추가할 것, 1~6 + 보너스 1페이지 */}
-                            {/* 특수족보 1페이지 */}
+                            <img src='/assets/5.PNG'/>
+                            <img src='/assets/6.PNG'/>
+                            <img src='/assets/7.PNG'/>
                         </div>
                     </div>
                     <hr></hr>
@@ -180,12 +181,32 @@ function HelpModal(props) {
                                 2: 기록하기로 선택한 족보입니다. 우측 괄호 내에 계산된 점수만큼 해당 족보에 기록됩니다.<br/>
                                 3: 선택한 족보에 점수를 기록합니다
                             </div>
+                            <div className='comment'>
+                                ONES:   1의 눈을 가진 주사위의 개수 * 1<br/>
+                                TWOS:   2의 눈을 가진 주사위의 개수 * 2<br/>
+                                THREES: 3의 눈을 가진 주사위의 개수 * 3<br/>
+                                FOURS:  4의 눈을 가진 주사위의 개수 * 4<br/>
+                                FIVES:  5의 눈을 가진 주사위의 개수 * 5<br/>
+                                SIXES:  6의 눈을 가진 주사위의 개수 * 6<br/>
+                                BONUS:  위의 6개의 점수의 합이 63점 이상이면 35점을 추가로 획득합니다.
+                            </div>
+                            <div className='comment'>
+                                CHOICE:     나온 주사위들의 값들의 합<br/>
+                                3 KIND OF:  같은 눈이 3개 이상 나왔을 시, 나온 주사위 값들의 합<br/>
+                                4 KIND OF:  같은 눈이 4개 이상 나왔을 시, 나온 주사위 값들의 합<br/>
+                                FULL HOUSE: 같은 눈이 2개와 3개씩 나왔을 시, 나온 주사위 값들의 합
+                            </div>
+                            <div className='comment'>
+                                SMALL STRAIGHT: 연속된 순서의 주사위가 4개 이상 나왔을 시, 15점<br/>
+                                LARGE STRAIGHT: 연속된 순서의 주사위가 5개 나왔을 시, 30점<br/>
+                                YACHT:          같은 눈의 주사위가 5개 나왔을 시, 50점
+                            </div>
                         </div>
                     </div>
                     <hr></hr>
                     <div id='helpControl'>
                         <button onClick={handleMoveLeft}><i className="bi bi-caret-left-fill"></i></button>
-                        <div>{imgIdx+1} / 6</div>
+                        <div>{imgIdx+1} / 7</div>
                         <button onClick={handleMoveRight}><i className="bi bi-caret-right-fill"></i></button>
                     </div>
                 </div>
